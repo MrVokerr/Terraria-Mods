@@ -1,0 +1,8 @@
+Easily hide or show your buff bar with a single keypress!
+
+Toggle Buff Bar is a lightweight client-side utility mod that adds a customizable hotkey to hide or show all active buffs and debuffs on the HUD. Perfect for players who want a cleaner interface for screenshots, videos, or just general gameplay.
+
+- Default toggle key: B (can be changed in Controls → Mod Controls)
+- Buff effects still apply — only the UI is hidden!
+- Purely visual — no gameplay impact and 100% client-side
+- Works seamlessly with modded buffs and debuffs

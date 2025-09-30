@@ -1,0 +1,80 @@
+Mods: {
+	Vokerropweapons: {
+		ItemName: {
+			Voidreaver: Voidreaver
+			TKWave: TK Wave
+			DuhCannon: DuhCannon
+			BeanFlicker: Bean Flicker
+		}
+
+		ItemTooltip: {
+			Voidreaver:
+				'''
+				Tears through reality with every swing.
+				Right-click to freeze time.
+				'''
+			TKWave: Fires wave-like projectiles, inspired by the Borderlands classic.
+			DuhCannon:
+				'''
+				Fires an absolutely massive cannonball.
+				It's stupid powerful. Hence the name.
+				'''
+			BeanFlicker:
+				'''
+				Flicks beans at your enemies.
+				Summons beans that chase enemies.
+				'''
+		}
+
+		BuffName: {
+			Voidburn: Voidburn
+			BeanMinionBuff: Bean Minion
+		}
+
+		BuffDescription: {
+			Voidburn: Losing life and defense to dimensional flame
+			BeanMinionBuff: A loyal bean fights for you!
+		}
+	}
+}
+
+Buffs: {
+	Voidburn: {
+		DisplayName: Voidburn
+		Description: Mods.Vokerropweapons.Buffs.Voidburn.Description
+	}
+
+	BeanMinionBuff: {
+		DisplayName: Bean Minion
+		Description: Mods.Vokerropweapons.Buffs.BeanMinionBuff.Description
+	}
+}
+
+Items: {
+	Voidreaver: {
+		DisplayName: Voidreaver
+		Tooltip: ""
+	}
+
+	TKWave: {
+		DisplayName: TK Wave
+		Tooltip: Mods.Vokerropweapons.ItemTooltip.TKWave
+	}
+
+	DuhCannon: {
+		DisplayName: DuhCannon
+		Tooltip: Mods.Vokerropweapons.ItemTooltip.DuhCannon
+	}
+
+	BeanFlicker: {
+		DisplayName: Bean Flicker
+		Tooltip: Mods.Vokerropweapons.ItemTooltip.BeanFlicker
+	}
+}
+
+Projectiles: {
+	VoidSlash.DisplayName: Void Slash
+	TKWaveProjectile.DisplayName: Wave Pulse
+	CannonballProjectile.DisplayName: Cannonball
+	BeanMinion.DisplayName: Bean
+}

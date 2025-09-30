@@ -1,0 +1,4 @@
+displayName = Toggle Buff Bar
+author = You
+version = 1.0.0
+side = Client
