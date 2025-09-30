@@ -16,7 +16,7 @@ Each mod is published on the Steam Workshop and kept up to date here.
 ---
 ### 🔹 Bard & Healer Plus
 - 🛠️ [Source Code](https://github.com/MrVokerr/Terraria-Mods/tree/main/BardHealerPlus)  
-- 🎮 [Steam Workshop Page]([https://steamcommunity.com/sharedfiles/filedetails/?id=3577300512](https://steamcommunity.com/sharedfiles/filedetails/?id=3577590975))
+- 🎮 [Steam Workshop Page](https://steamcommunity.com/sharedfiles/filedetails/?id=3577590975)
 
 ## 🚀 About
 - All mods are built for **tModLoader 1.4+**  
