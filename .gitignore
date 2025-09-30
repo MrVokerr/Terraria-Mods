@@ -1,21 +1,56 @@
-# Visual Studio
+# ================================
+# 🛠️ tModLoader + Visual Studio Ignore
+# ================================
+
+# --- Visual Studio workspace files ---
 .vs/
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
 
-# Build outputs
+# --- Build outputs ---
 bin/
 obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
 
-# tModLoader compiled mods
+# --- tModLoader compiled mods ---
 *.tmod
 
-# IDEs
+# --- IDE configs ---
 .idea/
 *.iml
+*.ipr
+*.iws
 
-# OS junk
+# --- Rider / JetBrains cache ---
+.gradle/
+out/
+
+# --- Logs & Temp ---
+*.log
+*.tlog
+*.tmp
+*.temp
+*.db
+*.sqlite
+
+# --- OS junk ---
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# --- GitHub Desktop specific ---
+*.orig
+
+# ================================
+# ✅ Safe to track: 
+#   - ModSources (your actual mod code/sprites)
+#   - README.md, LICENSE, .hjson files
+# ================================
