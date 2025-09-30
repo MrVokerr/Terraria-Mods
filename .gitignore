@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+
+# tModLoader compiled mods
+*.tmod
+
+# IDEs
+.idea/
+*.iml
+
+# OS junk
+.DS_Store
+Thumbs.db
