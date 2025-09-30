@@ -1,0 +1,21 @@
+Items: {
+	MaxReverb: {
+		DisplayName: Max Reverb
+		Tooltip:
+			'''
+			300% increased empowerment range
+			Increases empowerment duration by 30 seconds.
+			'''
+	}
+}
+
+Mods: {
+	BardHealerPlus: {
+		Items: {
+			MaxReverb: {
+				DisplayName: Max Reverb
+				Tooltip: ""
+			}
+		}
+	}
+}

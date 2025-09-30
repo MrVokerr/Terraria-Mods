@@ -1,0 +1,5 @@
+displayName = Calamity Bard & Healer Plus
+author = Vokerr
+version = 0.1
+side = Both
+modReferences = ThoriumMod
