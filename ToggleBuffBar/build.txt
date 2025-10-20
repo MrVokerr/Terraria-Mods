@@ -1,4 +1,4 @@
 displayName = Toggle Buff Bar
-author = You
-version = 1.0.0
+author = Vokerr
+version = 1.0.1
 side = Client

@@ -1,0 +1,13 @@
+"Keybinds.Toggle Passive Tree.DisplayName": Toggle  Passive  Tree
+
+Items: {
+	PassivePoint: {
+		Tooltip: ""
+		DisplayName: Passive Point
+	}
+
+	OrbOfRespec: {
+		Tooltip: ""
+		DisplayName: Orb Of Respec
+	}
+}

@@ -1,0 +1,4 @@
+A work-in-progress passive skill tree mod inspired by Path of Exile.
+Earn points from boss kills and spend them on powerful stat upgrades.
+Includes melee, summoner, magic, ranged, and defensive paths with respec support.
+More nodes, visuals, and features coming soon!
