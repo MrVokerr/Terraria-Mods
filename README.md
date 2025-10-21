@@ -10,6 +10,10 @@ Each mod is published on the Steam Workshop and kept up to date here.
 - 🛠️ [Source Code](https://github.com/MrVokerr/ModSources/tree/main/ToggleBuffBar)  
 - 🎮 [Steam Workshop Page](https://steamcommunity.com/sharedfiles/filedetails/?id=3577187045)
 ---
+### 🔹 Exile Tree
+- 🛠️ [Source Code](https://github.com/MrVokerr/Terraria-Mods/tree/main/ExileTree)  
+- 🎮 [Steam Workshop Page](https://steamcommunity.com/sharedfiles/filedetails/?id=3590750200)
+---
 ### 🔹 Vokerr OP Weapons
 - 🛠️ [Source Code](https://github.com/MrVokerr/ModSources/tree/main/Vokerropweapons)  
 - 🎮 [Steam Workshop Page](https://steamcommunity.com/sharedfiles/filedetails/?id=3577300512)
