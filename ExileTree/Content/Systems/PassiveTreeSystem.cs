@@ -72,9 +72,9 @@ namespace ExileTree.Content.Systems
         {
             AllNodes.Clear();
 
-            // --------------------------------------------------
-            // STARTER
-            // --------------------------------------------------
+// --------------------------------------------------
+// STARTER
+// --------------------------------------------------
 AllNodes["Node_MaxHP"] = new PassiveNode {
     ID = "Node_MaxHP",
     Name = "Vital Spark",
@@ -90,93 +90,129 @@ AllNodes["Node_MaxHP"] = new PassiveNode {
     IsMajor = false
 };
 
-            // --------------------------------------------------
-            // ⚔️ MELEE BRANCH (LEFT)
-            // --------------------------------------------------
-            AllNodes["Node_Melee_1"] = new PassiveNode {
-                ID = "Node_Melee_1",
-                Name = "Honed Edge",
-                Description = "+6% Melee Damage",
-                Position = Layout.Grid(-1f, 0f),
-                ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Melee_2" },
-                StatType = StatTypes.MeleeDamage,
-                Value = 0.06f,
-                IsMajor = false
-            };
-            AllNodes["Node_Melee_2"] = new PassiveNode {
-                ID = "Node_Melee_2",
-                Name = "Quick Strikes",
-                Description = "+7% Melee Attack Speed",
-                Position = Layout.Grid(-2f, 0f),
-                ConnectedNodes = new List<string> { "Node_Melee_1", "Node_Melee_3" },
-                StatType = StatTypes.MeleeSpeed,
-                Value = 0.07f,
-                IsMajor = false
-            };
-            AllNodes["Node_Melee_3"] = new PassiveNode {
-                ID = "Node_Melee_3",
-                Name = "Bulwark",
-                Description = "+6 Defense",
-                Position = Layout.Grid(-3f, 0f),
-                ConnectedNodes = new List<string> { "Node_Melee_2", "Node_MeleeMajor_IronVanguard" },
-                StatType = StatTypes.Defense,
-                Value = 6f,
-                IsMajor = false
-            };
-            AllNodes["Node_MeleeMajor_IronVanguard"] = new PassiveNode {
-                ID = "Node_MeleeMajor_IronVanguard",
-                Name = "Iron Vanguard",
-                Description = "Major: +10% Melee Damage, +25 Defense, -10% Movement Speed",
-                Position = Layout.Grid(-4f, 0f),
-                ConnectedNodes = new List<string> { "Node_Melee_3" },
-                StatType = StatTypes.MeleeDamage,
-                Value = 0.10f,
-                IsMajor = true
-            };
+// --------------------------------------------------
+// ⚔️ MELEE BRANCH (LEFT) — forked
+// --------------------------------------------------
 
-            // --------------------------------------------------
-            // 🕷️ SUMMONER BRANCH (RIGHT)
-            // --------------------------------------------------
-            AllNodes["Node_Summon_1"] = new PassiveNode {
-                ID = "Node_Summon_1",
-                Name = "Spirit Bond",
-                Description = "+8% Summon Damage",
-                Position = Layout.Grid(1f, 0f),
-                ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Summon_2" },
-                StatType = StatTypes.SummonDamage,
-                Value = 0.08f,
-                IsMajor = false
-            };
-            AllNodes["Node_Summon_2"] = new PassiveNode {
-                ID = "Node_Summon_2",
-                Name = "Soul Whisper",
-                Description = "+6% Summon Damage",
-                Position = Layout.Grid(2f, 0f),
-                ConnectedNodes = new List<string> { "Node_Summon_1", "Node_Summon_3" },
-                StatType = StatTypes.SummonDamage,
-                Value = 0.06f,
-                IsMajor = false
-            };
-            AllNodes["Node_Summon_3"] = new PassiveNode {
-                ID = "Node_Summon_3",
-                Name = "Legion Commander",
-                Description = "+1 Minion Slot",
-                Position = Layout.Grid(3f, 0f),
-                ConnectedNodes = new List<string> { "Node_Summon_2", "Node_SummonMajor_HiveMind" },
-                StatType = StatTypes.SummonSlot,
-                Value = 1f,
-                IsMajor = false
-            };
-            AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
-                ID = "Node_SummonMajor_HiveMind",
-                Name = "Hive Mind",
-                Description = "Major: +12% Summon Damage, +2 Minion Slots",
-                Position = Layout.Grid(4f, 0f),
-                ConnectedNodes = new List<string> { "Node_Summon_3" },
-                StatType = StatTypes.SummonDamage,
-                Value = 0.12f,
-                IsMajor = true
-            };
+// Shared melee path from center
+AllNodes["Node_Melee_1"] = new PassiveNode {
+    ID = "Node_Melee_1",
+    Name = "Honed Edge",
+    Description = "+6% Melee Damage",
+    Position = Layout.Grid(-1f, 0f),
+    ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Melee_2", "Node_Melee_3" },
+    StatType = StatTypes.MeleeDamage,
+    Value = 0.06f,
+    IsMajor = false
+};
+
+// Upper path → Bladed Dance
+AllNodes["Node_Melee_2"] = new PassiveNode {
+    ID = "Node_Melee_2",
+    Name = "Quick Strikes",
+    Description = "+7% Melee Attack Speed",
+    Position = Layout.Grid(-2f, -0.5f),
+    ConnectedNodes = new List<string> { "Node_Melee_1", "Node_MeleeMajor_BladedDance" },
+    StatType = StatTypes.MeleeSpeed,
+    Value = 0.07f,
+    IsMajor = false
+};
+
+AllNodes["Node_MeleeMajor_BladedDance"] = new PassiveNode {
+    ID = "Node_MeleeMajor_BladedDance",
+    Name = "Bladed Dance",
+    Description = "Major: +12% Melee Attack Speed, +8% Movement Speed",
+    Position = Layout.Grid(-3f, -1f),
+    ConnectedNodes = new List<string> { "Node_Melee_2" },
+    StatType = StatTypes.MeleeSpeed,
+    Value = 0.12f,
+    IsMajor = true
+};
+
+// Lower path → Iron Vanguard
+AllNodes["Node_Melee_3"] = new PassiveNode {
+    ID = "Node_Melee_3",
+    Name = "Bulwark",
+    Description = "+6 Defense",
+    Position = Layout.Grid(-2f, 0.5f),
+    ConnectedNodes = new List<string> { "Node_Melee_1", "Node_MeleeMajor_IronVanguard" },
+    StatType = StatTypes.Defense,
+    Value = 6f,
+    IsMajor = false
+};
+
+AllNodes["Node_MeleeMajor_IronVanguard"] = new PassiveNode {
+    ID = "Node_MeleeMajor_IronVanguard",
+    Name = "Iron Vanguard",
+    Description = "Major: +10% Melee Damage, +25 Defense, -10% Movement Speed",
+    Position = Layout.Grid(-3f, 1f),
+    ConnectedNodes = new List<string> { "Node_Melee_3" },
+    StatType = StatTypes.MeleeDamage,
+    Value = 0.10f,
+    IsMajor = true
+};
+
+// --------------------------------------------------
+// 🕷️ SUMMONER BRANCH (RIGHT) — forked
+// --------------------------------------------------
+
+// Shared summoner path from center
+AllNodes["Node_Summon_1"] = new PassiveNode {
+    ID = "Node_Summon_1",
+    Name = "Spirit Bond",
+    Description = "+8% Summon Damage",
+    Position = Layout.Grid(1f, 0f),
+    ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Summon_2", "Node_Summon_3" },
+    StatType = StatTypes.SummonDamage,
+    Value = 0.08f,
+    IsMajor = false
+};
+
+// Upper path → Primal Wrath
+AllNodes["Node_Summon_2"] = new PassiveNode {
+    ID = "Node_Summon_2",
+    Name = "Soul Whisper",
+    Description = "+6% Summon Damage",
+    Position = Layout.Grid(2f, -0.5f),
+    ConnectedNodes = new List<string> { "Node_Summon_1", "Node_SummonMajor_PrimalWrath" },
+    StatType = StatTypes.SummonDamage,
+    Value = 0.06f,
+    IsMajor = false
+};
+
+AllNodes["Node_SummonMajor_PrimalWrath"] = new PassiveNode {
+    ID = "Node_SummonMajor_PrimalWrath",
+    Name = "Primal Wrath",
+    Description = "Major: +25% Summon Damage while at Max Minions",
+    Position = Layout.Grid(3f, -1f),
+    ConnectedNodes = new List<string> { "Node_Summon_2" },
+    StatType = StatTypes.SummonDamage,
+    Value = 0f,
+    IsMajor = true
+};
+
+// Lower path → Hive Mind
+AllNodes["Node_Summon_3"] = new PassiveNode {
+    ID = "Node_Summon_3",
+    Name = "Legion Commander",
+    Description = "+1 Minion Slot",
+    Position = Layout.Grid(2f, 0.5f),
+    ConnectedNodes = new List<string> { "Node_Summon_1", "Node_SummonMajor_HiveMind" },
+    StatType = StatTypes.SummonSlot,
+    Value = 1f,
+    IsMajor = false
+};
+
+AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
+    ID = "Node_SummonMajor_HiveMind",
+    Name = "Hive Mind",
+    Description = "Major: +12% Summon Damage, +2 Minion Slots",
+    Position = Layout.Grid(3f, 1f),
+    ConnectedNodes = new List<string> { "Node_Summon_3" },
+    StatType = StatTypes.SummonDamage,
+    Value = 0.12f,
+    IsMajor = true
+};
 
             // --------------------------------------------------
             // ❤️ LIFE BRANCH (UP)
