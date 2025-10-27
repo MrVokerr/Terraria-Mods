@@ -2,8 +2,8 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.GameInput;
-using Terraria.Chat;              
-using Microsoft.Xna.Framework;    
+using Terraria.Chat;
+using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using ExileTree.Content.Systems;
 using Terraria.Localization;
@@ -47,12 +47,25 @@ namespace ExileTree.Content.Players
         // --------------------------------------------------
         public override void OnEnterWorld()
         {
-            SyncBossMilestonePoints();
+            // Automatically regrant missing milestone points
+            int currentMilestones = BossMilestones.GetMilestoneCount();
+
+            if (milestonePointsGranted < currentMilestones)
+            {
+                int gained = currentMilestones - milestonePointsGranted;
+                skillPoints += gained;
+                milestonePointsGranted += gained;
+
+                Main.NewText(
+                    $"[Exile Tree] Restored {gained} passive point{(gained == 1 ? "" : "s")} from defeated bosses.",
+                    Color.LimeGreen
+                );
+            }
         }
 
         public override void PostUpdate()
         {
-            // Keep milestone sync current in case bosses die during play
+            // Keep milestone sync current during gameplay
             SyncBossMilestonePoints();
         }
 
@@ -65,7 +78,10 @@ namespace ExileTree.Content.Players
             {
                 skillPoints += delta;
                 milestonePointsGranted += delta;
-                Main.NewText($"Exile Tree: +{delta} passive point{(delta == 1 ? "" : "s")} from boss milestones (Total granted: {milestonePointsGranted}).", 100, 255, 100);
+                Main.NewText(
+                    $"Exile Tree: +{delta} passive point{(delta == 1 ? "" : "s")} from boss milestones (Total granted: {milestonePointsGranted}).",
+                    Color.Goldenrod
+                );
             }
         }
 
@@ -125,24 +141,23 @@ namespace ExileTree.Content.Players
             Player player = caller.Player;
             var modPlayer = player.GetModPlayer<ExileTreePlayer>();
 
-            int before = modPlayer.skillPoints;
             int beforeMilestone = modPlayer.milestonePointsGranted;
             int defeated = BossMilestones.GetMilestoneCount();
-
             int gained = defeated - beforeMilestone;
+
             if (gained > 0)
             {
                 modPlayer.skillPoints += gained;
                 modPlayer.milestonePointsGranted += gained;
 
                 ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(
-                    $"Exile Tree: Recalculated milestones → +{gained} new passive point{(gained == 1 ? "" : "s")}."
+                    $"[Exile Tree] Recalculated milestones → +{gained} new passive point{(gained == 1 ? "" : "s")}."
                 ), Color.LimeGreen);
             }
             else
             {
                 ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(
-                    $"Exile Tree: No new milestones to add (Total granted: {modPlayer.milestonePointsGranted})."
+                    $"[Exile Tree] All milestone points are already accounted for (Total granted: {modPlayer.milestonePointsGranted})."
                 ), Color.Gray);
             }
         }
