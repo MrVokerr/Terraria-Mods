@@ -1,4 +1,4 @@
 displayName = Exile Tree
 author = Vokerr
-version = 0.6
+version = 0.7
 side = Both

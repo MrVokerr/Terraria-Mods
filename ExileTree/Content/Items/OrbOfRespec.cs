@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,9 +9,16 @@ namespace ExileTree.Content.Items
     // Craftable: refunds all spent points.
     public class OrbOfRespec : ModItem
     {
-        // Optional placeholder so you don't need custom art yet:
-        // public override string Texture => "Terraria/Images/Item_" + ItemID.Amethyst;
+        public override void SetStaticDefaults() {
+            ItemID.Sets.IsFood[Type] = false; // This is not a food item
+            Item.ResearchUnlockCount = 5; // Amount needed for Journey Mode research
+        }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
+            tooltips.Add(new TooltipLine(Mod, "OrbOfRespecTooltip", "Refunds all spent passive skill points"));
+            tooltips.Add(new TooltipLine(Mod, "OrbOfRespecUsage", "Right click to use"));
+        }
+        
         public override void SetDefaults() {
             Item.width = 28;
             Item.height = 28;
@@ -19,7 +27,7 @@ namespace ExileTree.Content.Items
             Item.useAnimation = 20;
             Item.consumable = true;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.buyPrice(silver: 75);
+            Item.value = Item.buyPrice(silver: 25);
             Item.UseSound = SoundID.Item29;
             Item.maxStack = 99;
         }
@@ -30,19 +38,11 @@ namespace ExileTree.Content.Items
         }
 
         public override void AddRecipes() {
-            // Simple, early-ish recipe (tweak to taste)
             CreateRecipe()
                 .AddIngredient(ItemID.Amethyst, 5)
                 .AddIngredient(ItemID.Bottle, 1)
                 .AddTile(TileID.WorkBenches)
                 .Register();
-
-            // (Optional alternative recipe example)
-            // CreateRecipe()
-            //     .AddIngredient(ItemID.FallenStar, 3)
-            //     .AddIngredient(ItemID.Glass, 10)
-            //     .AddTile(TileID.Anvils)
-            //     .Register();
         }
     }
 }
