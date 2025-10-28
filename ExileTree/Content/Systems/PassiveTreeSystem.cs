@@ -87,7 +87,8 @@ AllNodes["Node_MaxHP"] = new PassiveNode {
     },
     StatType = StatTypes.Life,
     Value = 20f,
-    IsMajor = false
+    IsMajor = false,
+    IconPath = "ExileTree/Content/Assets/Passives/VitalSpark"
 };
 
 // --------------------------------------------------
@@ -103,7 +104,8 @@ AllNodes["Node_Melee_1"] = new PassiveNode {
     ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Melee_2", "Node_Melee_3" },
     StatType = StatTypes.MeleeDamage,
     Value = 0.06f,
-    IsMajor = false
+    IsMajor = false,
+    IconPath = "ExileTree/Content/Assets/Passives/HonedEdge"
 };
 
 // Upper path → Bladed Dance
@@ -115,7 +117,8 @@ AllNodes["Node_Melee_2"] = new PassiveNode {
     ConnectedNodes = new List<string> { "Node_Melee_1", "Node_MeleeMajor_BladedDance" },
     StatType = StatTypes.MeleeSpeed,
     Value = 0.07f,
-    IsMajor = false
+    IsMajor = false,
+    IconPath = "ExileTree/Content/Assets/Passives/QuickStrikes"
 };
 
 AllNodes["Node_MeleeMajor_BladedDance"] = new PassiveNode {
@@ -126,7 +129,8 @@ AllNodes["Node_MeleeMajor_BladedDance"] = new PassiveNode {
     ConnectedNodes = new List<string> { "Node_Melee_2" },
     StatType = StatTypes.MeleeSpeed,
     Value = 0.12f,
-    IsMajor = true
+    IsMajor = true,
+    IconPath = "ExileTree/Content/Assets/Passives/BladedDance"
 };
 
 // Lower path → Iron Vanguard
@@ -138,7 +142,8 @@ AllNodes["Node_Melee_3"] = new PassiveNode {
     ConnectedNodes = new List<string> { "Node_Melee_1", "Node_MeleeMajor_IronVanguard" },
     StatType = StatTypes.Defense,
     Value = 6f,
-    IsMajor = false
+    IsMajor = false,
+    IconPath = "ExileTree/Content/Assets/Passives/Bulwark"
 };
 
 AllNodes["Node_MeleeMajor_IronVanguard"] = new PassiveNode {
@@ -149,7 +154,8 @@ AllNodes["Node_MeleeMajor_IronVanguard"] = new PassiveNode {
     ConnectedNodes = new List<string> { "Node_Melee_3" },
     StatType = StatTypes.MeleeDamage,
     Value = 0.10f,
-    IsMajor = true
+    IsMajor = true,
+    IconPath = "ExileTree/Content/Assets/Passives/IronVanguard"
 };
 
 // --------------------------------------------------
@@ -165,30 +171,32 @@ AllNodes["Node_Summon_1"] = new PassiveNode {
     ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Summon_2", "Node_Summon_3" },
     StatType = StatTypes.SummonDamage,
     Value = 0.08f,
-    IsMajor = false
+    IsMajor = false,
+    IconPath = "ExileTree/Content/Assets/Passives/SpiritBond"
 };
 
-// Upper path → Primal Wrath
 AllNodes["Node_Summon_2"] = new PassiveNode {
     ID = "Node_Summon_2",
     Name = "Soul Whisper",
     Description = "+6% Summon Damage",
     Position = Layout.Grid(2f, -0.5f),
-    ConnectedNodes = new List<string> { "Node_Summon_1", "Node_SummonMajor_PrimalWrath" },
+    ConnectedNodes = new List<string> { "Node_Summon_1", "Node_SummonMajor_SpiritAscendant" },
     StatType = StatTypes.SummonDamage,
     Value = 0.06f,
-    IsMajor = false
+    IsMajor = false,
+    IconPath = "ExileTree/Content/Assets/Passives/SoulWhisper"
 };
 
-AllNodes["Node_SummonMajor_PrimalWrath"] = new PassiveNode {
-    ID = "Node_SummonMajor_PrimalWrath",
-    Name = "Primal Wrath",
+AllNodes["Node_SummonMajor_SpiritAscendant"] = new PassiveNode {
+    ID = "Node_SummonMajor_SpiritAscendant",
+    Name = "Spirit Ascendant",
     Description = "Major: +25% Summon Damage while at Max Minions",
     Position = Layout.Grid(3f, -1f),
     ConnectedNodes = new List<string> { "Node_Summon_2" },
     StatType = StatTypes.SummonDamage,
     Value = 0f,
-    IsMajor = true
+    IsMajor = true,
+    IconPath = "ExileTree/Content/Assets/Passives/SpiritAscendant"
 };
 
 // Lower path → Hive Mind
@@ -197,21 +205,23 @@ AllNodes["Node_Summon_3"] = new PassiveNode {
     Name = "Legion Commander",
     Description = "+1 Minion Slot",
     Position = Layout.Grid(2f, 0.5f),
-    ConnectedNodes = new List<string> { "Node_Summon_1", "Node_SummonMajor_HiveMind" },
+    ConnectedNodes = new List<string> { "Node_Summon_1", "Node_SummonMajor_DominionOfSouls" },
     StatType = StatTypes.SummonSlot,
     Value = 1f,
-    IsMajor = false
+    IsMajor = false,
+    IconPath = "ExileTree/Content/Assets/Passives/LegionCommander"
 };
 
-AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
-    ID = "Node_SummonMajor_HiveMind",
-    Name = "Hive Mind",
+AllNodes["Node_SummonMajor_DominionOfSouls"] = new PassiveNode {
+    ID = "Node_SummonMajor_DominionOfSouls",
+    Name = "Dominion of Souls",
     Description = "Major: +12% Summon Damage, +2 Minion Slots",
     Position = Layout.Grid(3f, 1f),
     ConnectedNodes = new List<string> { "Node_Summon_3" },
     StatType = StatTypes.SummonDamage,
     Value = 0.12f,
-    IsMajor = true
+    IsMajor = true,
+    IconPath = "ExileTree/Content/Assets/Passives/DominionOfSouls"
 };
 
             // --------------------------------------------------
@@ -225,7 +235,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Life_2" },
                 StatType = StatTypes.Life,
                 Value = 20f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/VitalReserves"
             };
             AllNodes["Node_Life_2"] = new PassiveNode {
                 ID = "Node_Life_2",
@@ -235,17 +246,19 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_Life_1", "Node_Life_3" },
                 StatType = StatTypes.Life,
                 Value = 20f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/SanguineWellspring"
             };
             AllNodes["Node_Life_3"] = new PassiveNode {
                 ID = "Node_Life_3",
                 Name = "Heart of Oak",
                 Description = "Major: +60 Maximum Life, +1 Life Regeneration",
-                Position = Layout.Grid(0f, -3f),
+                Position = Layout.Grid(-0.15f, -3.25f), // End of Life branch
                 ConnectedNodes = new List<string> { "Node_Life_2" },
                 StatType = StatTypes.Life,
                 Value = 60f,
-                IsMajor = true
+                IsMajor = true,
+                IconPath = "ExileTree/Content/Assets/Passives/HeartOfOak"
             };
 
             // --------------------------------------------------
@@ -259,7 +272,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Regen_2" },
                 StatType = StatTypes.LifeRegen,
                 Value = 2f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/SecondWind"
             };
             AllNodes["Node_Regen_2"] = new PassiveNode {
                 ID = "Node_Regen_2",
@@ -269,7 +283,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_Regen_1", "Node_Regen_3" },
                 StatType = StatTypes.LifeRegen,
                 Value = 2f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/SlowMending"
             };
             AllNodes["Node_Regen_3"] = new PassiveNode {
                 ID = "Node_Regen_3",
@@ -279,7 +294,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_Regen_2" },
                 StatType = StatTypes.LifeRegen,
                 Value = 6f,
-                IsMajor = true
+                IsMajor = true,
+                IconPath = "ExileTree/Content/Assets/Passives/PhoenixSpirit"
             };
 
             // --------------------------------------------------
@@ -293,7 +309,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_MaxHP", "Node_DR_2" },
                 StatType = StatTypes.DamageReduction,
                 Value = 0.04f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/StoneSkin"
             };
             AllNodes["Node_DR_2"] = new PassiveNode {
                 ID = "Node_DR_2",
@@ -303,7 +320,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_DR_1", "Node_DR_3" },
                 StatType = StatTypes.Defense,
                 Value = 6f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/ShieldTraining"
             };
             AllNodes["Node_DR_3"] = new PassiveNode {
                 ID = "Node_DR_3",
@@ -313,7 +331,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_DR_2" },
                 StatType = StatTypes.DamageReduction,
                 Value = 0.12f,
-                IsMajor = true
+                IsMajor = true,
+                IconPath = "ExileTree/Content/Assets/Passives/StoneForm"
             };
 
             // --------------------------------------------------
@@ -327,7 +346,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Move_2" },
                 StatType = StatTypes.MoveSpeed,
                 Value = 0.06f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/ScoutsStep"
             };
             AllNodes["Node_Move_2"] = new PassiveNode {
                 ID = "Node_Move_2",
@@ -337,17 +357,19 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_Move_1", "Node_Move_3" },
                 StatType = StatTypes.MoveSpeed,
                 Value = 0.06f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/WindInTheVeins"
             };
             AllNodes["Node_Move_3"] = new PassiveNode {
                 ID = "Node_Move_3",
-                Name = "Windrunner",
+                Name = "Lightning Step",
                 Description = "Major: +20% Movement Speed, +Jump Speed",
                 Position = Layout.Grid(3f, -3f),
                 ConnectedNodes = new List<string> { "Node_Move_2" },
                 StatType = StatTypes.MoveSpeed,
                 Value = 0.20f,
-                IsMajor = true
+                IsMajor = true,
+                IconPath = "ExileTree/Content/Assets/Passives/LightningStep"
             };
 
             // --------------------------------------------------
@@ -361,7 +383,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Magic_2" },
                 StatType = StatTypes.MagicDamage,
                 Value = 0.08f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/ArcaneSpark"
             };
             AllNodes["Node_Magic_2"] = new PassiveNode {
                 ID = "Node_Magic_2",
@@ -371,17 +394,19 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_Magic_1", "Node_Magic_3" },
                 StatType = StatTypes.MagicCrit,
                 Value = 3f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/ArcaneFocus"
             };
             AllNodes["Node_Magic_3"] = new PassiveNode {
                 ID = "Node_Magic_3",
                 Name = "Archmage",
                 Description = "Major: +15% Magic Damage, +10% Magic Crit, +40 Max Mana",
-                Position = Layout.Grid(0f, 3f),
+                Position = Layout.Grid(-0.15f, 3.1f), // End of Magic branch
                 ConnectedNodes = new List<string> { "Node_Magic_2" },
                 StatType = StatTypes.MagicDamage,
                 Value = 0.15f,
-                IsMajor = true
+                IsMajor = true,
+                IconPath = "ExileTree/Content/Assets/Passives/Archmage"
             };
 
             // --------------------------------------------------
@@ -395,7 +420,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_MaxHP", "Node_Ranged_2" },
                 StatType = StatTypes.RangedDamage,
                 Value = 0.08f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/SureShot"
             };
             AllNodes["Node_Ranged_2"] = new PassiveNode {
                 ID = "Node_Ranged_2",
@@ -405,7 +431,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_Ranged_1", "Node_Ranged_3" },
                 StatType = StatTypes.RangedCrit,
                 Value = 4f,
-                IsMajor = false
+                IsMajor = false,
+                IconPath = "ExileTree/Content/Assets/Passives/EagleEye"
             };
             AllNodes["Node_Ranged_3"] = new PassiveNode {
                 ID = "Node_Ranged_3",
@@ -415,7 +442,8 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 ConnectedNodes = new List<string> { "Node_Ranged_2" },
                 StatType = StatTypes.RangedDamage,
                 Value = 0.15f,
-                IsMajor = true
+                IsMajor = true,
+                IconPath = "ExileTree/Content/Assets/Passives/Marksman"
             };
 
             StarterNodeId = "Node_MaxHP";
@@ -458,7 +486,7 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 case "Node_Summon_1": p.GetDamage(DamageClass.Summon) += 0.08f; break;
                 case "Node_Summon_2": p.GetDamage(DamageClass.Summon) += 0.06f; break;
                 case "Node_Summon_3": p.maxMinions += 1; break;
-                case "Node_SummonMajor_HiveMind": p.GetDamage(DamageClass.Summon) += 0.12f; p.maxMinions += 2; break;
+                case "Node_SummonMajor_DominionOfSouls": p.GetDamage(DamageClass.Summon) += 0.12f; p.maxMinions += 2; break;
 
                 // --- Life ---
                 case "Node_MaxHP": p.statLifeMax2 += 20; break;

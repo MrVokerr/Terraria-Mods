@@ -2,3 +2,6 @@ displayName = Exile Tree
 author = Vokerr
 version = 0.7
 side = Both
+
+include = Content/*
+include = Content/Assets/Passives/*

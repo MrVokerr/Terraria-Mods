@@ -16,17 +16,24 @@ namespace ExileTree.Content.UI
         private readonly string _nodeId;
         private static Texture2D Pixel => TextureAssets.MagicPixel.Value;
 
-        // Constructor
         public NodeButton(string nodeId)
         {
             _nodeId = nodeId;
-            Width.Set(24f, 0f);
-            Height.Set(24f, 0f);
+            
+            // Set the initial size based on whether it's a major node
+            if (PassiveTreeSystem.AllNodes.TryGetValue(nodeId, out var node))
+            {
+                float size = node.IsMajor ? 32f : 21f; // Major stays 32, Minor increased to 21 (15% bigger than 18)
+                Width.Set(size, 0f);
+                Height.Set(size, 0f);
+            }
+            else
+            {
+                Width.Set(21f, 0f); // Default to minor node size
+                Height.Set(21f, 0f);
+            }
         }
 
-        // --------------------------------------------------
-        // Draw node (simple color fill + outline)
-        // --------------------------------------------------
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             var dims = GetDimensions();
@@ -39,27 +46,59 @@ namespace ExileTree.Content.UI
             bool unlocked = player.unlockedNodes.Contains(_nodeId);
             bool canUnlock = PassiveTreeSystem.CanUnlock(_nodeId, player.unlockedNodes) && player.skillPoints > 0;
 
-            // Base fill colors
-            Color fillColor = unlocked
-                ? Color.LimeGreen
-                : (canUnlock ? Color.Goldenrod : Color.DimGray);
+            Color borderColor = unlocked ? new Color(255, 255, 255, 230) : (canUnlock ? Color.Goldenrod : Color.Gray); // Almost solid white for allocated nodes
+            Color tint = unlocked ? Color.White : (canUnlock ? Color.LightGray : Color.DimGray);
 
-            Color borderColor = unlocked ? Color.White : Color.Black * 0.7f;
+            int size = node.IsMajor ? 32 : 21; // Major stays 32, Minor increased to 21
+            var nodeRect = new Rectangle((int)pos.X, (int)pos.Y, size, size);
+            
+            // Update the UI element's size to match (ensures hitbox is correct)
+            Width.Set(size, 0f);
+            Height.Set(size, 0f);
 
-            int size = node.IsMajor ? 40 : 24;
-            Rectangle rect = new Rectangle((int)pos.X, (int)pos.Y, size, size);
+            // We no longer draw the background or borders since we have proper icons for all nodes
+            // The hitbox is maintained by the nodeRect and Width/Height settings above
 
-            // Draw filled shape
-            if (node.IsMajor)
-                DrawCircle(spriteBatch, rect.Center.ToVector2(), size / 2f, fillColor, borderColor, 2);
-            else
-                spriteBatch.Draw(Pixel, rect, fillColor);
+            // Only draw the icon if we have a valid asset
+            if (!string.IsNullOrEmpty(node.IconPath) && ModContent.HasAsset(node.IconPath))
+            {
+                Texture2D iconTexture = ModContent.Request<Texture2D>(node.IconPath).Value;
+                float scale = node.IsMajor ? 1f : 0.644f; // Major stays at 1x, Minor increased by 15% (0.56 * 1.15 = 0.644)
+                Vector2 iconPosition = pos + new Vector2(size / 2f);
+                
+                // Draw the icon centered with enhanced brightness for allocated nodes
+                Color iconTint = unlocked ? Color.White * 1.25f : tint; // Make allocated nodes 25% brighter
+                spriteBatch.Draw(
+                    iconTexture, 
+                    iconPosition, 
+                    null, 
+                    iconTint, 
+                    0f, 
+                    new Vector2(iconTexture.Width / 2f, iconTexture.Height / 2f),
+                    scale, 
+                    SpriteEffects.None, 
+                    0f
+                );
 
-            // Draw square border for non-major nodes
-            if (!node.IsMajor)
-                DrawOutline(spriteBatch, rect, borderColor, false);
+                // Add a subtle pulsing glow effect for unlocked nodes
+                if (unlocked)
+                {
+                    float pulse = 0.85f + (float)System.Math.Sin(Main.GameUpdateCount * 0.05f) * 0.15f;
+                    spriteBatch.Draw(
+                        iconTexture,
+                        iconPosition,
+                        null,
+                        Color.White * 0.4f * pulse,
+                        0f,
+                        new Vector2(iconTexture.Width / 2f, iconTexture.Height / 2f),
+                        scale * 1f, // Slightly larger for glow effect
+                        SpriteEffects.None,
+                        0f
+                    );
+                }
+            }
 
-            // Tooltip
+            // --- Tooltip ---
             if (IsMouseHovering)
             {
                 string state = unlocked
@@ -70,9 +109,7 @@ namespace ExileTree.Content.UI
             }
         }
 
-        // --------------------------------------------------
         // Handle left-click unlocking
-        // --------------------------------------------------
         public override void LeftClick(UIMouseEvent evt)
         {
             var player = Main.LocalPlayer.GetModPlayer<ExileTreePlayer>();
@@ -92,54 +129,12 @@ namespace ExileTree.Content.UI
             SoundEngine.PlaySound(SoundID.Unlock);
         }
 
-        // --------------------------------------------------
-        // Draw square border
-        // --------------------------------------------------
-        private void DrawOutline(SpriteBatch sb, Rectangle rect, Color color, bool circle)
+        private void DrawOutline(SpriteBatch sb, Rectangle rect, Color color)
         {
             sb.Draw(Pixel, new Rectangle(rect.X, rect.Y, rect.Width, 2), color);
             sb.Draw(Pixel, new Rectangle(rect.X, rect.Bottom - 2, rect.Width, 2), color);
             sb.Draw(Pixel, new Rectangle(rect.X, rect.Y, 2, rect.Height), color);
             sb.Draw(Pixel, new Rectangle(rect.Right - 2, rect.Y, 2, rect.Height), color);
-        }
-
-        // --------------------------------------------------
-        // Draw circular node (for major passives)
-        // --------------------------------------------------
-        private void DrawCircle(SpriteBatch sb, Vector2 center, float radius, Color fill, Color outline, int outlineThickness = 2)
-        {
-            Texture2D pixel = Pixel;
-            int segments = 40;
-            float increment = MathHelper.TwoPi / segments;
-            Vector2[] points = new Vector2[segments + 1];
-
-            for (int i = 0; i <= segments; i++)
-            {
-                float angle = i * increment;
-                points[i] = center + radius * new Vector2((float)System.Math.Cos(angle), (float)System.Math.Sin(angle));
-            }
-
-            // Fill
-            for (int i = 0; i < segments; i++)
-                DrawTriangle(sb, center, points[i], points[i + 1], fill);
-
-            // Outline
-            for (int i = 0; i < segments; i++)
-                DrawLine(sb, points[i], points[i + 1], outline, outlineThickness);
-        }
-
-        private void DrawTriangle(SpriteBatch sb, Vector2 p1, Vector2 p2, Vector2 p3, Color color)
-        {
-            sb.Draw(Pixel, new Rectangle((int)p1.X, (int)p1.Y, 2, 2), color);
-            sb.Draw(Pixel, new Rectangle((int)p2.X, (int)p2.Y, 2, 2), color);
-            sb.Draw(Pixel, new Rectangle((int)p3.X, (int)p3.Y, 2, 2), color);
-        }
-
-        private void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, Color color, int thickness)
-        {
-            Vector2 edge = end - start;
-            float angle = (float)System.Math.Atan2(edge.Y, edge.X);
-            sb.Draw(Pixel, new Rectangle((int)start.X, (int)start.Y, (int)edge.Length(), thickness), null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
         }
     }
 }
