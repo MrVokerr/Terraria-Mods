@@ -14,7 +14,10 @@ namespace ExileTree.Content.UI
     public class NodeButton : UIElement
     {
         private readonly string _nodeId;
+        private float _zoom = 1f;
         private static Texture2D Pixel => TextureAssets.MagicPixel.Value;
+        
+        public string NodeId => _nodeId; // Public accessor for nodeId
 
         public NodeButton(string nodeId)
         {
@@ -52,9 +55,10 @@ namespace ExileTree.Content.UI
             int size = node.IsMajor ? 32 : 21; // Major stays 32, Minor increased to 21
             var nodeRect = new Rectangle((int)pos.X, (int)pos.Y, size, size);
             
-            // Update the UI element's size to match (ensures hitbox is correct)
-            Width.Set(size, 0f);
-            Height.Set(size, 0f);
+            // Update the UI element's size to match (ensures hitbox is correct) and apply zoom
+            float scaledSize = size * _zoom;
+            Width.Set(scaledSize, 0f);
+            Height.Set(scaledSize, 0f);
 
             // We no longer draw the background or borders since we have proper icons for all nodes
             // The hitbox is maintained by the nodeRect and Width/Height settings above
@@ -63,7 +67,7 @@ namespace ExileTree.Content.UI
             if (!string.IsNullOrEmpty(node.IconPath) && ModContent.HasAsset(node.IconPath))
             {
                 Texture2D iconTexture = ModContent.Request<Texture2D>(node.IconPath).Value;
-                float scale = node.IsMajor ? 1f : 0.644f; // Major stays at 1x, Minor increased by 15% (0.56 * 1.15 = 0.644)
+                float scale = (node.IsMajor ? 1f : 0.644f) * _zoom; // Apply zoom to the base scale
                 Vector2 iconPosition = pos + new Vector2(size / 2f);
                 
                 // Draw the icon centered with enhanced brightness for allocated nodes
@@ -135,6 +139,18 @@ namespace ExileTree.Content.UI
             sb.Draw(Pixel, new Rectangle(rect.X, rect.Bottom - 2, rect.Width, 2), color);
             sb.Draw(Pixel, new Rectangle(rect.X, rect.Y, 2, rect.Height), color);
             sb.Draw(Pixel, new Rectangle(rect.Right - 2, rect.Y, 2, rect.Height), color);
+        }
+
+        public void SetZoom(float zoom)
+        {
+            _zoom = zoom;
+            if (PassiveTreeSystem.AllNodes.TryGetValue(_nodeId, out var node))
+            {
+                float size = node.IsMajor ? 32f : 21f;
+                float scaledSize = size * _zoom;
+                Width.Set(scaledSize, 0f);
+                Height.Set(scaledSize, 0f);
+            }
         }
     }
 }
