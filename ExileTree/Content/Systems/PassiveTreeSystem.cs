@@ -461,6 +461,7 @@ AllNodes["Node_SummonMajor_HiveMind"] = new PassiveNode {
                 case "Node_SummonMajor_HiveMind": p.GetDamage(DamageClass.Summon) += 0.12f; p.maxMinions += 2; break;
 
                 // --- Life ---
+                case "Node_MaxHP": p.statLifeMax2 += 20; break;
                 case "Node_Life_1": p.statLifeMax2 += 20; break;
                 case "Node_Life_2": p.statLifeMax2 += 20; break;
                 case "Node_Life_3": p.statLifeMax2 += 60; p.lifeRegen += 2; break;

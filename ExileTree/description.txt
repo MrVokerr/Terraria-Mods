@@ -4,4 +4,6 @@ Includes melee, summoner, magic, ranged, and defensive paths with respec support
 You can Respec your passives by crafting a Orb of Respec at a workbench (x5 Amethyst + 1 Bottle)
 Chat command /recalcpassives has also been added, allowing players to manually re-sync their progression if needed.
 
+[url=https://github.com/MrVokerr/Terraria-Mods/tree/main]GitHub Source Code[/url]
+
 More nodes, visuals, and features coming soon!
