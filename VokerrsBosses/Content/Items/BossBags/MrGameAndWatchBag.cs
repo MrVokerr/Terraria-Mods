@@ -36,9 +36,8 @@ namespace VokerrsBosses.Content.Items.BossBags
 			// Always drop trophy in expert mode
 			itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<Placeables.MrGameAndWatchTrophy>(), 10));
 			
-			// Add your boss weapon/accessory drops here
-			// Example:
-			// itemLoot.Add(ItemDropRule.NotScalingWithLuck(ModContent.ItemType<YourWeaponHere>(), 1, 1, 1));
+			// Judge's Hammer weapon - guaranteed drop
+			itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<Weapons.Melee.JudgeHammerWeapon>(), 1, 1, 1));
 			
 			// Coins
 			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<NPCs.Bosses.MrGameAndWatch.MrGameAndWatch>()));

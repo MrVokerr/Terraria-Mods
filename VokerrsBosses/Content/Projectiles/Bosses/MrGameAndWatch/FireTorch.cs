@@ -12,19 +12,17 @@ namespace VokerrsBosses.Content.Projectiles.Bosses.MrGameAndWatch
 			// DisplayName.SetDefault("Fire Torch");
 		}
 
-		public override void SetDefaults()
-		{
-			Projectile.width = 20;
-			Projectile.height = 20;
-			Projectile.hostile = true;
-			Projectile.friendly = false;
-			Projectile.penetrate = 1;
-			Projectile.timeLeft = 150;
-			Projectile.aiStyle = -1;
-			Projectile.tileCollide = true;
-		}
-
-		public override void AI()
+	public override void SetDefaults()
+	{
+		Projectile.width = 20;
+		Projectile.height = 20;
+		Projectile.hostile = true;
+		Projectile.friendly = false;
+		Projectile.penetrate = 1;
+		Projectile.timeLeft = 600; // Much longer lifetime to travel across multiple screens (was 150)
+		Projectile.aiStyle = -1;
+		Projectile.tileCollide = true;
+	}		public override void AI()
 		{
 			// Light
 			Lighting.AddLight(Projectile.Center, 0.9f, 0.5f, 0.1f);

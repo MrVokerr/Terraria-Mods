@@ -5,57 +5,55 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System;
 
 namespace VokerrsBosses.Content.Projectiles.Bosses.MrGameAndWatch
 {
 	public class JudgeHammer : ModProjectile
 	{
 		private int JudgeNumber => (int)Projectile.ai[0];
+		private bool hasDealtDamage = false;
 
 		public override void SetStaticDefaults()
 		{
 			// DisplayName.SetDefault("Judge Hammer");
 		}
 
-		public override void SetDefaults()
-		{
-			Projectile.width = 48;
-			Projectile.height = 48;
-			Projectile.hostile = true;
-			Projectile.friendly = false;
-			Projectile.penetrate = -1;
-			Projectile.timeLeft = 30;
-			Projectile.aiStyle = -1;
-			Projectile.tileCollide = false;
-		}
+	public override void SetDefaults()
+	{
+		Projectile.width = 48;
+		Projectile.height = 48;
+		Projectile.hostile = true; // Boss projectile - damages players
+		Projectile.friendly = false;
+		Projectile.penetrate = -1;
+		Projectile.timeLeft = 45;
+		Projectile.aiStyle = -1;
+		Projectile.tileCollide = false;
+	}
 
-		public override void AI()
+	public override void AI()
+	{
+		// Follow the NPC owner (Mr. Game & Watch) during windup
+		if (Projectile.ai[1] < 20)
 		{
-			// Follow the NPC owner
-			if (Projectile.owner == 255)
+			for (int i = 0; i < Main.maxNPCs; i++)
 			{
-				// Find Mr. Game and Watch
-				for (int i = 0; i < Main.maxNPCs; i++)
+				NPC npc = Main.npc[i];
+				if (npc.active && npc.type == ModContent.NPCType<NPCs.Bosses.MrGameAndWatch.MrGameAndWatch>())
 				{
-					NPC npc = Main.npc[i];
-					if (npc.active && npc.type == ModContent.NPCType<NPCs.Bosses.MrGameAndWatch.MrGameAndWatch>())
-					{
-						Projectile.Center = npc.Center + new Vector2(npc.direction * 30, 0);
-						Projectile.direction = npc.direction;
-						Projectile.spriteDirection = npc.direction;
-						break;
-					}
+					Projectile.Center = npc.Center + new Vector2(npc.direction * 30, 0);
+					Projectile.direction = npc.direction;
+					Projectile.spriteDirection = npc.direction;
+					break;
 				}
 			}
-
-		// Swing animation
+		}		// Swing animation
 		Projectile.rotation = MathHelper.Lerp(-0.5f, 0.5f, Projectile.ai[1] / 30f) * Projectile.direction;
 		Projectile.ai[1]++;
 
 		// Spawn number above hammer
-		if (Projectile.ai[1] == 15) // Show number halfway through swing
+		if (Projectile.ai[1] == 15)
 		{
-			// Create floating combat text showing the judge number
 			Color textColor = JudgeNumber switch
 			{
 				9 => Color.Gold,
@@ -68,10 +66,70 @@ namespace VokerrsBosses.Content.Projectiles.Bosses.MrGameAndWatch
 			CombatText.NewText(Projectile.getRect(), textColor, JudgeNumber.ToString(), true, true);
 		}
 
-		// Critical hit on 9
+		// Deal AoE damage at frame 20 (peak of swing)
+		if (Projectile.ai[1] == 20 && !hasDealtDamage)
+		{
+			hasDealtDamage = true;
+			
+			// Scale AoE based on judge number: 1 = 100px, 9 = 2000px (multiple screens)
+			float aoeRadius = 100f + (JudgeNumber * 200f); // 300px to 1900px
+			
+			// Visual effect for AoE
+			int dustCount = JudgeNumber * 15;
+			Color dustColor = JudgeNumber == 9 ? Color.Gold : (JudgeNumber >= 7 ? Color.Orange : Color.White);
+			
+			for (int i = 0; i < dustCount; i++)
+			{
+				float angle = MathHelper.TwoPi / dustCount * i;
+				Vector2 offset = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * aoeRadius;
+				
+				Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 
+					JudgeNumber == 9 ? DustID.GoldFlame : DustID.Torch, 
+					Vector2.Zero, 100, dustColor, 2f);
+				dust.noGravity = true;
+			}
+			
+			// Deal damage to all players in AoE
+			if (Main.netMode != NetmodeID.MultiplayerClient)
+			{
+				for (int i = 0; i < Main.maxPlayers; i++)
+				{
+					Player player = Main.player[i];
+					if (player.active && !player.dead && Vector2.Distance(Projectile.Center, player.Center) <= aoeRadius)
+					{
+						int damage = Projectile.damage;
+						
+						// Instant kill on 9 for Last Judge
+						if (JudgeNumber == 9 && Projectile.damage >= 200)
+						{
+							player.Hurt(Terraria.DataStructures.PlayerDeathReason.ByProjectile(player.whoAmI, Projectile.whoAmI), 
+								99999, 0);
+						}
+						else
+						{
+							player.Hurt(Terraria.DataStructures.PlayerDeathReason.ByProjectile(player.whoAmI, Projectile.whoAmI), 
+								damage, 0);
+						}
+						
+						// Knockback based on judge number
+						if (JudgeNumber >= 7)
+						{
+							player.velocity.X += 10f * Math.Sign(player.Center.X - Projectile.Center.X);
+							player.velocity.Y -= 8f;
+						}
+						else if (JudgeNumber >= 4)
+						{
+							player.velocity.X += 5f * Math.Sign(player.Center.X - Projectile.Center.X);
+							player.velocity.Y -= 4f;
+						}
+					}
+				}
+			}
+		}
+
+		// Visual effects during swing
 		if (JudgeNumber == 9)
 		{
-			// Extra effects for the legendary 9
 			if (Main.rand.NextBool(2))
 			{
 				Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 
@@ -81,7 +139,6 @@ namespace VokerrsBosses.Content.Projectiles.Bosses.MrGameAndWatch
 		}
 		else if (JudgeNumber >= 7)
 		{
-			// Strong hits get orange sparks
 			if (Main.rand.NextBool(3))
 			{
 				Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 

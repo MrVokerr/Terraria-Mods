@@ -2,64 +2,98 @@
 
 This document lists all the sprite files you need to create for the mod to work properly.
 
+## CURRENT PROGRESS: 10/10 Sprites Complete (100%) ✅
+
+✅ = Added | ❌ = Still Needed
+
 ## Boss Sprites
 **Location:** Content/NPCs/Bosses/MrGameAndWatch/
 
-1. **MrGameAndWatch.png** - Main boss sprite sheet
+1. ✅ **MrGameAndWatch.png** - Main boss sprite sheet
    - Size: 48x384 pixels (48x64 per frame, 6 frames)
    - Should be a flat, black silhouette style like the original Game & Watch character
    - Frames: Idle, Walk 1, Walk 2, Attack 1, Attack 2, Jump
+   - **STATUS: ADDED! ✅**
+   - ✅ **Dimensions verified: 48x384 pixels - PERFECT!**
 
-2. **MrGameAndWatch_Head_Boss.png** - Boss head icon
+2. ✅ **MrGameAndWatch_Head_Boss.png** - Boss head icon
    - Size: 36x36 pixels
    - Appears on the boss health bar
+   - **STATUS: ADDED!**
 
 ## Projectile Sprites
 **Location:** Content/Projectiles/Bosses/MrGameAndWatch/
 
-3. **ChefSausage.png** - Sausage projectile
+3. ✅ **ChefSausage.png** - Sausage projectile
    - Size: 16x16 pixels
    - Brown sausage sprite
+   - **STATUS: ADDED!**
 
-4. **JudgeHammer.png** - Hammer projectile
+4. ✅ **JudgeHammer.png** - Hammer projectile
    - Size: 48x48 pixels
    - Black hammer silhouette
+   - **NOTE: Numbers (1-9) are displayed via CombatText - NO extra sprites needed!**
+   - **STATUS: ADDED!**
 
-5. **OilBlast.png** - Oil bucket blast
+5. ✅ **OilBlast.png** - Oil bucket blast
    - Size: 32x32 pixels
    - Dark liquid blob
+   - **STATUS: ADDED!**
 
-6. **FireTorch.png** - Fire torch projectile
+6. ✅ **FireTorch.png** - Fire torch projectile
    - Size: 20x20 pixels
    - Fire/torch sprite
+   - **STATUS: ADDED!**
 
 ## Item Sprites
 **Location:** Content/Items/SummonItems/
 
-7. **FlatBeep.png** - Boss summoning item
+7. ✅ **FlatBeep.png** - Boss summoning item
    - Size: 32x32 pixels
    - Could be a Game & Watch device or beeping object
+   - Item name: "Vintage Game & Watch"
+   - **STATUS: ADDED!**
 
 **Location:** Content/Items/BossBags/
 
-8. **MrGameAndWatchBag.png** - Boss treasure bag
+8. ✅ **MrGameAndWatchBag.png** - Boss treasure bag
    - Size: 36x32 pixels
    - Expert mode loot bag
+   - **STATUS: ADDED!**
 
 **Location:** Content/Items/Placeables/
 
-9. **MrGameAndWatchTrophy.png** - Trophy item icon
+9. ✅ **MrGameAndWatchTrophy.png** - Trophy item icon
    - Size: 32x32 pixels
    - Boss trophy item
+   - **STATUS: ADDED!**
 
 ## Tile Sprites
 **Location:** Content/Tiles/
 
-10. **MrGameAndWatchTrophy.png** - Trophy tile (placed)
+10. ✅ **MrGameAndWatchTrophy.png** - Trophy tile (placed)
     - Size: 54x54 pixels (3x3 tile, 18x18 per tile)
     - Trophy when placed on wall
+    - **STATUS: ADDED!**
 
 ---
+
+## 🎉 ALL SPRITES COMPLETE!
+**All 10/10 sprites are now in the project - ready to build!**
+
+## 📋 PRIORITY ORDER:
+1. **CRITICAL:** MrGameAndWatch.png (main boss sprite) - Required!
+2. **HIGH:** JudgeHammer.png (most iconic attack)
+3. **HIGH:** OilBlast.png, FireTorch.png (attack variety)
+4. **MEDIUM:** FlatBeep.png (summoning item)
+5. **LOW:** MrGameAndWatchBag.png, Trophy sprites (cosmetic)
+
+## 🎨 JUDGE HAMMER NUMBER DISPLAY:
+**IMPORTANT:** You do NOT need 9 different hammer sprites for numbers 1-9!
+- The mod uses **CombatText** (floating combat numbers) to display the judge number
+- Numbers appear above the hammer in **color-coded text**:
+  - Gold (9), Orange (7-8), Yellow (5-6), White (3-4), Gray (1-2)
+- ONE hammer sprite works for all numbers!
 
 ## IMPORTANT NOTES:
 - All sprites should be PNG format with transparency

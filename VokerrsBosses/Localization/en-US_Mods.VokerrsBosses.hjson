@@ -2,38 +2,24 @@
 
 Mods: {
 	VokerrsBosses: {
-		NPCs: {
-			MrGameAndWatch: {
-				DisplayName: Mr. Game and Watch
-			}
-		}
+		NPCs.MrGameAndWatch.DisplayName: Mr. Game and Watch
 
 		Projectiles: {
-			ChefSausage: {
-				DisplayName: Sausage
-			}
-
-			JudgeHammer: {
-				DisplayName: Judge Hammer
-			}
-
-			OilBlast: {
-				DisplayName: Oil Blast
-			}
-
-			FireTorch: {
-				DisplayName: Fire Torch
-			}
+			ChefSausage.DisplayName: Sausage
+			JudgeHammer.DisplayName: Judge Hammer
+			OilBlast.DisplayName: Oil Blast
+			FireTorch.DisplayName: Fire Torch
+			PlayerJudgeHammer.DisplayName: Judge Hammer
 		}
 
 		Items: {
 			FlatBeep: {
 				DisplayName: Vintage Game & Watch
-				Tooltip: 
+				Tooltip:
 					'''
-					Summons Mr. Game & Watch
-					Press all the buttons at once to summon him!
+					A mysterious floppy disc from 1980
 					'BEEP BEEP BEEP!'
+					Summons the 2D retro fighter
 					'''
 			}
 
@@ -46,12 +32,52 @@ Mods: {
 				DisplayName: Mr. Game and Watch Trophy
 				Tooltip: "'A monument to your retro victory'"
 			}
-		}
 
-		Tiles: {
-			MrGameAndWatchTrophy: {
-				MapEntry: Mr. Game and Watch Trophy
+			JudgeHammerWeapon: {
+				DisplayName: Judge's Hammer
+				Tooltip:
+					'''
+					Roll the dice of fate!
+					Randomly deals 1-9x damage in an AoE
+					Rolling a 9 is LEGENDARY - instakills all non-bosses!
+					Scales with melee damage
+					'BEEP BEEP BEEP'
+					'''
 			}
 		}
+
+		Tiles.MrGameAndWatchTrophy.MapEntry: Mr. Game and Watch Trophy
 	}
+}
+
+Items: {
+	MrGameAndWatchBag: {
+		DisplayName: Mr Game And Watch Bag
+		Tooltip: ""
+	}
+
+	MrGameAndWatchTrophy: {
+		DisplayName: Mr Game And Watch Trophy
+		Tooltip: ""
+	}
+
+	FlatBeep: {
+		DisplayName: Flat Beep
+		Tooltip: ""
+	}
+
+	JudgeHammerWeapon: {
+		DisplayName: Judge Hammer Weapon
+		Tooltip: ""
+	}
+}
+
+NPCs.MrGameAndWatch.DisplayName: Mr Game And Watch
+
+Projectiles: {
+	ChefSausage.DisplayName: Chef Sausage
+	FireTorch.DisplayName: Fire Torch
+	JudgeHammer.DisplayName: Judge Hammer
+	OilBlast.DisplayName: Oil Blast
+	PlayerJudgeHammer.DisplayName: Player Judge Hammer
 }

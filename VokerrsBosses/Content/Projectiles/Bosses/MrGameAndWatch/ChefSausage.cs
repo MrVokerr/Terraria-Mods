@@ -33,6 +33,16 @@ namespace VokerrsBosses.Content.Projectiles.Bosses.MrGameAndWatch
 				Projectile.velocity.Y = 16f;
 			}
 
+			// Horizontal spread as it falls - sausages spread outward over time
+			Projectile.ai[1]++;
+			if (Projectile.ai[1] > 10f) // Start spreading after 10 frames (after initial launch)
+			{
+				float spreadDirection = Projectile.velocity.X > 0 ? 1f : -1f;
+				Projectile.velocity.X += spreadDirection * 0.15f; // Gradually accelerate outward
+				if (Projectile.velocity.X > 8f) Projectile.velocity.X = 8f;
+				if (Projectile.velocity.X < -8f) Projectile.velocity.X = -8f;
+			}
+
 			// Rotation
 			Projectile.rotation += 0.2f * Projectile.direction;
 

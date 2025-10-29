@@ -11,7 +11,7 @@ namespace VokerrsBosses.Content.Items.SummonItems
 		public override void SetStaticDefaults()
 		{
 			// DisplayName.SetDefault("Flat Beep");
-			// Tooltip.SetDefault("Summons Mr. Game and Watch\n'Beep Beep Beep!'");
+			// Tooltip.SetDefault("A mysterious floppy disc from 1980\n'BEEP BEEP BEEP!'\nSummons the 2D retro fighter");
 			
 			ItemID.Sets.SortingPriorityBossSpawns[Type] = 12; // Boss summon priority
 		}
@@ -78,8 +78,34 @@ namespace VokerrsBosses.Content.Items.SummonItems
 			
 			if (Main.netMode != NetmodeID.MultiplayerClient)
 			{
-				// Spawn above and in front of the player
-				NPC.SpawnOnPlayer(player.whoAmI, type);
+				// Spawn close to the player - directly in front, on the ground
+				Vector2 spawnPos = player.Center;
+				
+				// Spawn 200 pixels to the left or right of player (in front of where they're facing)
+				spawnPos.X += player.direction * 200f;
+				
+				// Find ground level below spawn position (or use player's Y if no ground nearby)
+				int tileX = (int)(spawnPos.X / 16f);
+				int tileY = (int)(player.position.Y / 16f);
+				
+				// Search downward for solid ground
+				bool foundGround = false;
+				for (int y = tileY; y < tileY + 50; y++)
+				{
+					if (WorldGen.SolidTile(tileX, y))
+					{
+						spawnPos.Y = y * 16f - 32f; // Spawn just above the ground tile
+						foundGround = true;
+						break;
+					}
+				}
+				
+				if (!foundGround)
+				{
+					spawnPos.Y = player.position.Y; // Default to player's height if no ground found
+				}
+				
+				NPC.NewNPC(NPC.GetBossSpawnSource(player.whoAmI), (int)spawnPos.X, (int)spawnPos.Y, type);
 			}
 			else
 			{
@@ -90,10 +116,11 @@ namespace VokerrsBosses.Content.Items.SummonItems
 	}		public override void AddRecipes()
 		{
 			CreateRecipe()
-				.AddIngredient(ItemID.Wood, 10)
-				.AddIngredient(ItemID.Wire, 5)
-				.AddIngredient(ItemID.Cog, 3)
-				.AddTile(TileID.WorkBenches)
+				.AddIngredient(ItemID.Ectoplasm, 5) // Post-Plantera Dungeon drop (same as Duke Fishron tier)
+				.AddIngredient(ItemID.Glass, 10) // LCD screen
+				.AddIngredient(ItemID.SoulofLight, 5) // Light souls for the LCD glow
+				.AddIngredient(ItemID.SoulofNight, 5) // Night souls for the dark pixels
+				.AddTile(TileID.MythrilAnvil) // Hardmode crafting station
 				.Register();
 		}
 	}
