@@ -13,21 +13,19 @@ namespace ExileTree.Content.Players
     /// <summary>
     /// Player data for the Exile Tree passive skill system.
     /// 
-    /// FAILSAFE SYSTEM FOR PASSIVE POINTS:
-    /// This system ensures players always receive the correct number of passive points,
-    /// regardless of when they join or how they play:
+    /// SIMPLIFIED FAILSAFE SYSTEM FOR PASSIVE POINTS:
+    /// This system ensures players always have the correct number of passive points
+    /// by recalculating from world state only when necessary:
     /// 
-    /// 1. NEW CHARACTER: Starts with 2 base points + points from any bosses already defeated in the world
-    /// 2. EXISTING CHARACTER: On world entry, automatically grants missing points from newly defeated bosses
-    /// 3. MULTIPLAYER JOIN: Players joining mid-playthrough get all points from bosses defeated before they joined
-    /// 4. MOD ADDED MID-PLAYTHROUGH: Automatically calculates and grants points from all previously defeated bosses
-    /// 5. LIVE BOSS DEFEATS: PassivePointSyncSystem detects new boss kills and grants points to all online players
-    /// 6. CORRUPTED SAVE RECOVERY: /recalcpassives command allows manual recalculation if needed
+    /// WHEN POINTS ARE SYNCED:
+    /// 1. WORLD ENTRY: OnEnterWorld() recalculates points from boss state (primary sync point)
+    /// 2. FIRST TICK: PostUpdate() backup recalc on first tick (multiplayer safety net)
+    /// 3. WORLD LOAD: PassivePointSyncSystem recalcs all players on server start/reload
+    /// 4. COMMAND: /passives command auto-syncs and displays point status
+    /// 5. DATA LOAD: LoadData() corruption detection validates save data
     /// 
-    /// The system uses three layers of sync:
-    /// - OnEnterWorld(): Initial grant when entering world
-    /// - PostUpdate(): Backup sync on first tick (catches multiplayer edge cases)
-    /// - PassivePointSyncSystem: Server-side periodic check for new boss defeats
+    /// NO PERIODIC CHECKING - Zero tick-by-tick overhead. Boss detection happens naturally
+    /// through OnEnterWorld (when you see new bosses are dead) and world load events
     /// </summary>
     public class ExileTreePlayer : ModPlayer
     {
@@ -78,32 +76,29 @@ namespace ExileTree.Content.Players
                 nodeRanks[nodeIds[i]] = ranks[i];
             }
             skillPoints = tag.GetInt("skillPoints");
+            milestonePointsGranted = tag.GetInt("milestonePointsGranted");
             
-            // Load milestonePointsGranted with backwards compatibility
-            if (tag.ContainsKey("milestonePointsGranted"))
+            // CRITICAL: Don't trust save data AT ALL. Just flag it for recalculation.
+            // This handles: legacy bugs, world transfers, character transfers, corruption, cheating
+            // We'll recalculate from world state on entry anyway, so these values are just placeholders
+            bool suspiciousData = false;
+            
+            if (skillPoints < 0 || skillPoints > 19) // Max possible: 2 base + 17 bosses
             {
-                milestonePointsGranted = tag.GetInt("milestonePointsGranted");
-            }
-            else
-            {
-                // Old save without milestone tracking - assume they already have all boss points
-                // We calculate this by: (current skillPoints - 2 base points - points spent on nodes)
-                int pointsSpent = 0;
-                foreach (var kvp in nodeRanks)
-                {
-                    if (PassiveTreeSystem.AllNodes.TryGetValue(kvp.Key, out var node))
-                    {
-                        pointsSpent += kvp.Value * node.SkillPointCost;
-                    }
-                }
-                
-                // Assume milestone points = current + spent - 2 base
-                // This prevents granting duplicate points when updating from old version
-                int totalPointsEverHad = skillPoints + pointsSpent;
-                milestonePointsGranted = System.Math.Max(0, totalPointsEverHad - 2);
+                suspiciousData = true;
             }
             
-            hasInitialSyncOccurred = false; // Reset sync flag on load
+            if (milestonePointsGranted < 0 || milestonePointsGranted > 17)
+            {
+                suspiciousData = true;
+            }
+            
+            if (suspiciousData)
+            {
+                Main.NewText("[Exile Tree] Save data will be validated against world state.", Color.Yellow);
+            }
+            
+            hasInitialSyncOccurred = false; // Always recalc on world entry
         }
 
         // --------------------------------------------------
@@ -113,69 +108,102 @@ namespace ExileTree.Content.Players
 
         public override void OnEnterWorld()
         {
-            // Force initial sync when entering world
+            // Force initial sync when entering world - this is the PRIMARY sync point
             hasInitialSyncOccurred = false;
-            PerformMilestoneSync(isInitialSync: true);
+            PerformFullRecalculation(showMessage: false);
         }
 
         public override void PostUpdate()
         {
-            // Perform initial sync on first update if it hasn't happened yet
-            // This ensures multiplayer clients get synced even if OnEnterWorld was missed
+            // ONLY run once on first tick as backup for multiplayer clients
+            // After that, do nothing - let the NPC.OnKill hook handle boss detection
             if (!hasInitialSyncOccurred)
             {
-                PerformMilestoneSync(isInitialSync: true);
+                PerformFullRecalculation(showMessage: false);
+            }
+        }
+
+        /// <summary>
+        /// BULLETPROOF RECALCULATION:
+        /// Completely recalculates what the player SHOULD have based on world state,
+        /// compares to what they DO have, and fixes any discrepancies.
+        /// Handles: new characters, old characters, version updates, world transfers, 
+        /// character transfers, save corruption, cheating, multiplayer joins.
+        /// </summary>
+        public void PerformFullRecalculation(bool showMessage)
+        {
+            // 1. Calculate how many points they SHOULD have
+            int bossesDefeated = BossMilestones.GetMilestoneCount();
+            int expectedBossPoints = bossesDefeated;
+            int expectedTotalPoints = 2 + expectedBossPoints; // 2 base + boss points
+
+            // 2. Calculate how many points they've SPENT
+            int pointsSpent = 0;
+            foreach (var kvp in nodeRanks)
+            {
+                if (PassiveTreeSystem.AllNodes.TryGetValue(kvp.Key, out var node))
+                {
+                    pointsSpent += kvp.Value * node.SkillPointCost;
+                }
+            }
+
+            // 3. CRITICAL CHECK: Do they have more nodes than possible?
+            // This catches: world transfers, character transfers, save editing, corruption
+            if (pointsSpent > expectedTotalPoints)
+            {
+                // They've spent MORE points than they should have total
+                // This is IMPOSSIBLE in a legitimate scenario
+                // Force a full respec to prevent cheating/corruption
+                nodeRanks.Clear();
+                pointsSpent = 0;
+                
+                if (showMessage && Main.netMode != Terraria.ID.NetmodeID.Server)
+                {
+                    Main.NewText(
+                        "[Exile Tree] Detected impossible node allocation. Tree has been reset. This can happen when transferring characters between worlds.",
+                        Color.Red
+                    );
+                }
+            }
+
+            // 4. Calculate what they SHOULD have available
+            int expectedAvailable = expectedTotalPoints - pointsSpent;
+
+            // 5. Compare to what they ACTUALLY have
+            int actualAvailable = skillPoints;
+            int difference = expectedAvailable - actualAvailable;
+
+            // 6. Fix any discrepancy
+            if (difference != 0)
+            {
+                skillPoints = expectedAvailable;
+                milestonePointsGranted = bossesDefeated;
+
+                if (showMessage && Main.netMode != Terraria.ID.NetmodeID.Server)
+                {
+                    if (difference > 0)
+                    {
+                        Main.NewText(
+                            $"[Exile Tree] Corrected your passive points! Added {difference} missing point{(difference == 1 ? "" : "s")}.",
+                            Color.LimeGreen
+                        );
+                    }
+                    else
+                    {
+                        Main.NewText(
+                            $"[Exile Tree] Corrected your passive points! Removed {-difference} excess point{(difference == -1 ? "" : "s")}.",
+                            Color.Yellow
+                        );
+                    }
+                }
             }
             else
             {
-                // After initial sync, only check for new bosses killed during gameplay
-                SyncBossMilestonePoints();
-            }
-        }
-
-        private void PerformMilestoneSync(bool isInitialSync)
-        {
-            int currentMilestones = BossMilestones.GetMilestoneCount();
-            int delta = currentMilestones - milestonePointsGranted;
-
-            if (delta > 0)
-            {
-                skillPoints += delta;
-                milestonePointsGranted = currentMilestones;
-
-                if (isInitialSync)
-                {
-                    Main.NewText(
-                        $"[Exile Tree] Granted {delta} passive point{(delta == 1 ? "" : "s")} from defeated bosses ({milestonePointsGranted} total).",
-                        Color.LimeGreen
-                    );
-                }
-                else
-                {
-                    Main.NewText(
-                        $"[Exile Tree] +{delta} passive point{(delta == 1 ? "" : "s")} from boss milestone{(delta == 1 ? "" : "s")}!",
-                        Color.Goldenrod
-                    );
-                }
+                // No correction needed, but still update milestone tracker
+                milestonePointsGranted = bossesDefeated;
             }
 
             hasInitialSyncOccurred = true;
-        }
-
-        private void SyncBossMilestonePoints()
-        {
-            int defeated = BossMilestones.GetMilestoneCount();
-            int delta = defeated - milestonePointsGranted;
-
-            if (delta > 0)
-            {
-                skillPoints += delta;
-                milestonePointsGranted = defeated;
-                Main.NewText(
-                    $"[Exile Tree] +{delta} passive point{(delta == 1 ? "" : "s")} from boss milestone{(delta == 1 ? "" : "s")}!",
-                    Color.Goldenrod
-                );
-            }
         }
 
         // --------------------------------------------------
@@ -208,19 +236,8 @@ namespace ExileTree.Content.Players
 
         public void RespecAll()
         {
-            // Calculate total points spent
-            int totalSpent = 0;
-            foreach (var kvp in nodeRanks)
-            {
-                if (PassiveTreeSystem.AllNodes.TryGetValue(kvp.Key, out var node))
-                {
-                    totalSpent += kvp.Value * node.SkillPointCost;
-                }
-            }
-            
-            // Refund all spent points
-            skillPoints += totalSpent;
             nodeRanks.Clear();
+            PerformFullRecalculation(showMessage: true);
         }
 
         // --------------------------------------------------
@@ -236,20 +253,43 @@ namespace ExileTree.Content.Players
     }
 
     // --------------------------------------------------
-    // Command: /passives — check milestone status and point breakdown
+    // Command: /passives — check milestone status and point breakdown + auto-sync
     // --------------------------------------------------
     public class PassivesCommand : ModCommand
     {
         public override CommandType Type => CommandType.Chat;
         public override string Command => "passives";
         public override string Usage => "/passives";
-        public override string Description => "Check your passive point status and defeated bosses.";
+        public override string Description => "Check your passive point status, defeated bosses, and auto-sync if needed.";
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             Player player = caller.Player;
             var modPlayer = player.GetModPlayer<ExileTreePlayer>();
 
+            // AUTO-SYNC ALL PLAYERS: If on server or singleplayer, sync everyone
+            if (Main.netMode != Terraria.ID.NetmodeID.MultiplayerClient)
+            {
+                // Sync all connected players
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    Player p = Main.player[i];
+                    if (p != null && p.active)
+                    {
+                        var mp = p.GetModPlayer<ExileTreePlayer>();
+                        mp.PerformFullRecalculation(showMessage: false);
+                    }
+                }
+                
+                Main.NewText("[Exile Tree] All players synced!", Color.Gold);
+            }
+            else
+            {
+                // Client-only: just sync yourself
+                modPlayer.PerformFullRecalculation(showMessage: false);
+            }
+
+            // Get updated values after sync
             int bossesDefeated = BossMilestones.GetMilestoneCount();
             int pointsFromBosses = modPlayer.milestonePointsGranted;
             int availablePoints = modPlayer.skillPoints;
@@ -264,92 +304,57 @@ namespace ExileTree.Content.Players
                 }
             }
 
+            // Calculate max possible points based on progression
+            int maxPossiblePoints = 2; // Base points
+            
+            // Pre-Hardmode bosses (7 total)
+            maxPossiblePoints += 7;
+            
+            // Hardmode bosses (10 total) - only count if in hardmode
+            if (Main.hardMode)
+            {
+                maxPossiblePoints += 10;
+            }
+            
+            int missingPoints = maxPossiblePoints - (2 + pointsFromBosses);
+            
             // Display summary
             Main.NewText("=== Exile Tree Passive Points ===", Color.Gold);
-            Main.NewText($"Base Points: 2", Color.LightGreen);
-            Main.NewText($"Boss Milestones Granted: {pointsFromBosses}", Color.LightGreen);
-            Main.NewText($"Total Earned: {2 + pointsFromBosses}", Color.Cyan);
-            Main.NewText($"Points Spent: {pointsSpent}", Color.Orange);
-            Main.NewText($"Available Points: {availablePoints}", Color.Yellow);
-            Main.NewText("", Color.White);
-
-            // Display boss milestone details
-            Main.NewText("=== World Boss Milestones ===", Color.Gold);
-            Main.NewText($"Pre-Hardmode Bosses:", Color.Cyan);
-            Main.NewText($"  {(NPC.downedSlimeKing ? "✓" : "✗")} King Slime", NPC.downedSlimeKing ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedBoss1 ? "✓" : "✗")} Eye of Cthulhu", NPC.downedBoss1 ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedBoss2 ? "✓" : "✗")} Evil Boss (EoW/BoC)", NPC.downedBoss2 ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedQueenBee ? "✓" : "✗")} Queen Bee", NPC.downedQueenBee ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedBoss3 ? "✓" : "✗")} Skeletron", NPC.downedBoss3 ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedDeerclops ? "✓" : "✗")} Deerclops", NPC.downedDeerclops ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(Main.hardMode ? "✓" : "✗")} Wall of Flesh", Main.hardMode ? Color.LimeGreen : Color.Gray);
-
-            Main.NewText($"Hardmode Bosses:", Color.Cyan);
-            Main.NewText($"  {(NPC.downedQueenSlime ? "✓" : "✗")} Queen Slime", NPC.downedQueenSlime ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedMechBoss1 ? "✓" : "✗")} The Twins", NPC.downedMechBoss1 ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedMechBoss2 ? "✓" : "✗")} The Destroyer", NPC.downedMechBoss2 ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedMechBoss3 ? "✓" : "✗")} Skeletron Prime", NPC.downedMechBoss3 ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedPlantBoss ? "✓" : "✗")} Plantera", NPC.downedPlantBoss ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedGolemBoss ? "✓" : "✗")} Golem", NPC.downedGolemBoss ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedEmpressOfLight ? "✓" : "✗")} Empress of Light", NPC.downedEmpressOfLight ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedFishron ? "✓" : "✗")} Duke Fishron", NPC.downedFishron ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedAncientCultist ? "✓" : "✗")} Lunatic Cultist", NPC.downedAncientCultist ? Color.LimeGreen : Color.Gray);
-            Main.NewText($"  {(NPC.downedMoonlord ? "✓" : "✗")} Moon Lord", NPC.downedMoonlord ? Color.LimeGreen : Color.Gray);
-
-            Main.NewText("", Color.White);
-            Main.NewText($"Total Bosses Defeated: {bossesDefeated}/17", Color.Gold);
+            Main.NewText("Base Points: 2", Color.LightGreen);
+            Main.NewText("Boss Milestones Granted: " + pointsFromBosses.ToString(), Color.LightGreen);
+            Main.NewText("Total Earned: " + (2 + pointsFromBosses).ToString(), Color.Cyan);
+            Main.NewText("Points Spent: " + pointsSpent.ToString(), Color.Orange);
+            Main.NewText("Available Points: " + availablePoints.ToString() + " / " + maxPossiblePoints.ToString() + " (Missing: " + missingPoints.ToString() + ")", Color.Yellow);
             
-            // Warning if desync detected
-            if (bossesDefeated != pointsFromBosses)
+            // Build list of defeated boss names
+            var defeatedBosses = new System.Collections.Generic.List<string>();
+            if (NPC.downedSlimeKing) defeatedBosses.Add("King Slime");
+            if (NPC.downedBoss1) defeatedBosses.Add("Eye of Cthulhu");
+            if (NPC.downedBoss2) defeatedBosses.Add("Evil Boss");
+            if (NPC.downedQueenBee) defeatedBosses.Add("Queen Bee");
+            if (NPC.downedBoss3) defeatedBosses.Add("Skeletron");
+            if (NPC.downedDeerclops) defeatedBosses.Add("Deerclops");
+            if (Main.hardMode) defeatedBosses.Add("Wall of Flesh");
+            if (NPC.downedQueenSlime) defeatedBosses.Add("Queen Slime");
+            if (NPC.downedMechBoss1) defeatedBosses.Add("The Twins");
+            if (NPC.downedMechBoss2) defeatedBosses.Add("The Destroyer");
+            if (NPC.downedMechBoss3) defeatedBosses.Add("Skeletron Prime");
+            if (NPC.downedPlantBoss) defeatedBosses.Add("Plantera");
+            if (NPC.downedGolemBoss) defeatedBosses.Add("Golem");
+            if (NPC.downedEmpressOfLight) defeatedBosses.Add("Empress of Light");
+            if (NPC.downedFishron) defeatedBosses.Add("Duke Fishron");
+            if (NPC.downedAncientCultist) defeatedBosses.Add("Lunatic Cultist");
+            if (NPC.downedMoonlord) defeatedBosses.Add("Moon Lord");
+            
+            // Display defeated bosses in one line
+            if (defeatedBosses.Count > 0)
             {
-                Main.NewText($"⚠ Warning: Mismatch detected! Use /recalcpassives to sync.", Color.Red);
-            }
-        }
-    }
-
-    // --------------------------------------------------
-    // Command: /recalcpassives — manually re-sync milestone points
-    // --------------------------------------------------
-    public class RecalcPassivesCommand : ModCommand
-    {
-        public override CommandType Type => CommandType.Chat;
-        public override string Command => "recalcpassives";
-        public override string Usage => "/recalcpassives";
-        public override string Description => "Recalculate passive points from previously defeated bosses.";
-
-        public override void Action(CommandCaller caller, string input, string[] args)
-        {
-            Player player = caller.Player;
-            var modPlayer = player.GetModPlayer<ExileTreePlayer>();
-
-            int beforeMilestone = modPlayer.milestonePointsGranted;
-            int defeated = BossMilestones.GetMilestoneCount();
-            int gained = defeated - beforeMilestone;
-
-            if (gained > 0)
-            {
-                modPlayer.skillPoints += gained;
-                modPlayer.milestonePointsGranted = defeated;
-
-                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(
-                    $"[Exile Tree] Recalculated milestones → +{gained} passive point{(gained == 1 ? "" : "s")} granted. Total: {modPlayer.skillPoints} available."
-                ), Color.LimeGreen);
-            }
-            else if (gained < 0)
-            {
-                // Edge case: milestonePointsGranted is somehow higher than actual (corrupted save?)
-                // Reset to actual count without adding/removing points
-                modPlayer.milestonePointsGranted = defeated;
-                
-                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(
-                    $"[Exile Tree] Milestone count corrected to {defeated}. No points changed."
-                ), Color.Yellow);
+                string bossNames = string.Join(", ", defeatedBosses);
+                Main.NewText("Milestone Bosses Killed: " + bossNames, Color.LimeGreen);
             }
             else
             {
-                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(
-                    $"[Exile Tree] All milestone points are already accounted for ({modPlayer.milestonePointsGranted} bosses defeated). You have {modPlayer.skillPoints} points available."
-                ), Color.Gray);
+                Main.NewText("Milestone Bosses Killed: None", Color.Gray);
             }
         }
     }

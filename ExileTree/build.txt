@@ -1,6 +1,6 @@
 displayName = Exile Tree
 author = Vokerr
-version = 1.21
+version = 2.5
 side = Both
 
 icon = icon_workshop.png

@@ -70,5 +70,12 @@ namespace ExileTree.Content.Systems
                 _treeState.OnOpen();
             }
         }
+
+        // Force refresh the UI if it's currently open
+        public static void RefreshIfOpen() {
+            if (Visible && _treeState != null) {
+                _treeState.ForceRefresh();
+            }
+        }
     }
 }
