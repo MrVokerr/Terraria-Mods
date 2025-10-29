@@ -289,21 +289,17 @@ namespace VokerrsBosses.Content.NPCs.Bosses.MrGameAndWatch
 			
 		// Jump towards player if they're above boss (only if player is significantly above)
 		float verticalDistance = player.Center.Y - NPC.Center.Y;
-		if (verticalDistance < -200 && NPC.velocity.Y == 0 && AttackTimer % 90 == 0) // Player is significantly above
+		if (verticalDistance < -200 && NPC.velocity.Y == 0 && AttackTimer % 180 == 0) // Player is significantly above - much less frequent
 		{
 			NPC.velocity.Y = -12f; // Strong jump upward
 			NPC.velocity.X = direction.X * 8f; // Jump towards player horizontally
 		}
-		// Only do regular small jumps if player is not too far above (prevents jumping away from player)
-		else if (AttackTimer % 120 == 0 && NPC.velocity.Y == 0 && verticalDistance > -100) // Regular jumps - much less frequent, only if player not above
-		{
-			NPC.velocity.Y = -6f; // Smaller jump
-		}
+		// Remove regular small jumps - boss should focus on running left/right instead
 		
-		// Aggressive dash towards player to close distance
-		if (AttackTimer % 50 == 0 && distance > 200f)
+		// Aggressive dash towards player to close distance - more frequent
+		if (AttackTimer % 30 == 0 && distance > 150f)
 		{
-			NPC.velocity.X = direction.X * 10f; // Faster dash when far
+			NPC.velocity.X = direction.X * 12f; // Faster dash when far
 		}
 		
 		// Check for health-based Judge attack (only at 80%, 60%, 40%, 20% HP)
@@ -330,12 +326,13 @@ namespace VokerrsBosses.Content.NPCs.Bosses.MrGameAndWatch
 			AttackCounter = 0;
 			
 			// Attack selection without Judge (now triggered by health thresholds)
+			// Chef and Fire are most common, Oil Panic is least common
 			int roll = Main.rand.Next(100);
 			int attack;
-			if (roll < 30) attack = 0; // 30% Chef
-			else if (roll < 55) attack = 2; // 25% Oil Panic
-			else if (roll < 80) attack = 3; // 25% Fire
-			else attack = 4; // 20% Parachute
+			if (roll < 35) attack = 0; // 35% Chef
+			else if (roll < 70) attack = 3; // 35% Fire
+			else if (roll < 85) attack = 2; // 15% Oil Panic
+			else attack = 4; // 15% Parachute
 			
 			State = (AIState)(attack + 1);
 			NPC.netUpdate = true;
@@ -356,16 +353,16 @@ namespace VokerrsBosses.Content.NPCs.Bosses.MrGameAndWatch
 		}
 
 		// Toss sausages - carpet bomb the area with wide spread
-		if (AttackTimer % 8 == 0 && AttackTimer < 120)
+		if (AttackTimer % 6 == 0 && AttackTimer < 120)
 		{
 			if (Main.netMode != NetmodeID.MultiplayerClient)
 			{
-				// Spawn 3 sausages at once with wide horizontal spread for carpet bombing
-				for (int i = 0; i < 3; i++)
+				// Spawn 5 sausages at once with very wide horizontal spread for true carpet bombing
+				for (int i = 0; i < 5; i++)
 				{
-					// Wide horizontal spread (-8 to 8) for carpet bombing effect
-					// High vertical velocity (-22 to -18) so they fly high before raining down
-					Vector2 velocity = new Vector2(Main.rand.NextFloat(-8f, 8f), Main.rand.NextFloat(-22f, -18f));
+					// Extremely wide horizontal spread (-15 to 15) for full screen coverage
+					// Very high vertical velocity (-28 to -22) so they fly much higher before raining down
+					Vector2 velocity = new Vector2(Main.rand.NextFloat(-15f, 15f), Main.rand.NextFloat(-28f, -22f));
 					Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, 
 						ModContent.ProjectileType<ChefSausage>(), 60, 1f);  // Hardmode damage
 				}
@@ -373,7 +370,7 @@ namespace VokerrsBosses.Content.NPCs.Bosses.MrGameAndWatch
 			SoundEngine.PlaySound(SoundID.Item1, NPC.Center);
 		}
 		
-		if (AttackTimer > 140)
+		if (AttackTimer > 160)
 		{
 			State = AIState.Idle;
 			AttackTimer = 0;
