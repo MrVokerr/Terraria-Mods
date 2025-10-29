@@ -46,32 +46,29 @@ namespace ExileTree.Content.UI
             if (!PassiveTreeSystem.AllNodes.TryGetValue(_nodeId, out var node))
                 return;
 
-            bool unlocked = player.unlockedNodes.Contains(_nodeId);
-            bool canUnlock = PassiveTreeSystem.CanUnlock(_nodeId, player.unlockedNodes) && player.skillPoints > 0;
+            int currentRank = player.nodeRanks.TryGetValue(_nodeId, out var rank) ? rank : 0;
+            bool unlocked = currentRank > 0;
+            bool canUnlock = PassiveTreeSystem.CanUnlock(_nodeId, player.unlockedNodes, player.nodeRanks) && 
+                           player.skillPoints >= node.SkillPointCost &&
+                           currentRank < node.MaxRank;
 
-            Color borderColor = unlocked ? new Color(255, 255, 255, 230) : (canUnlock ? Color.Goldenrod : Color.Gray); // Almost solid white for allocated nodes
+            Color borderColor = unlocked ? new Color(255, 255, 255, 230) : (canUnlock ? Color.Goldenrod : Color.Gray);
             Color tint = unlocked ? Color.White : (canUnlock ? Color.LightGray : Color.DimGray);
 
-            int size = node.IsMajor ? 32 : 21; // Major stays 32, Minor increased to 21
+            int size = node.IsMajor ? 32 : 21;
             var nodeRect = new Rectangle((int)pos.X, (int)pos.Y, size, size);
             
-            // Update the UI element's size to match (ensures hitbox is correct) and apply zoom
             float scaledSize = size * _zoom;
             Width.Set(scaledSize, 0f);
             Height.Set(scaledSize, 0f);
 
-            // We no longer draw the background or borders since we have proper icons for all nodes
-            // The hitbox is maintained by the nodeRect and Width/Height settings above
-
-            // Only draw the icon if we have a valid asset
             if (!string.IsNullOrEmpty(node.IconPath) && ModContent.HasAsset(node.IconPath))
             {
                 Texture2D iconTexture = ModContent.Request<Texture2D>(node.IconPath).Value;
-                float scale = (node.IsMajor ? 1f : 0.644f) * _zoom; // Apply zoom to the base scale
+                float scale = (node.IsMajor ? 1f : 0.644f) * _zoom;
                 Vector2 iconPosition = pos + new Vector2(size / 2f);
                 
-                // Draw the icon centered with enhanced brightness for allocated nodes
-                Color iconTint = unlocked ? Color.White * 1.25f : tint; // Make allocated nodes 25% brighter
+                Color iconTint = unlocked ? Color.White * 1.25f : tint;
                 spriteBatch.Draw(
                     iconTexture, 
                     iconPosition, 
@@ -84,7 +81,6 @@ namespace ExileTree.Content.UI
                     0f
                 );
 
-                // Add a subtle pulsing glow effect for unlocked nodes
                 if (unlocked)
                 {
                     float pulse = 0.85f + (float)System.Math.Sin(Main.GameUpdateCount * 0.05f) * 0.15f;
@@ -95,22 +91,74 @@ namespace ExileTree.Content.UI
                         Color.White * 0.4f * pulse,
                         0f,
                         new Vector2(iconTexture.Width / 2f, iconTexture.Height / 2f),
-                        scale * 1f, // Slightly larger for glow effect
+                        scale * 1f,
                         SpriteEffects.None,
                         0f
                     );
                 }
             }
 
-            // --- Tooltip ---
+            // Draw rank display for multi-rank nodes
+            if (node.MaxRank > 1)
+            {
+                string rankText = $"{currentRank}/{node.MaxRank}";
+                Vector2 textSize = FontAssets.MouseText.Value.MeasureString(rankText);
+                Vector2 textPos = pos + new Vector2(size / 2f - textSize.X / 2f, size + 2);
+                Utils.DrawBorderStringFourWay(spriteBatch, FontAssets.MouseText.Value, rankText, 
+                    textPos.X, textPos.Y, unlocked ? Color.White : Color.Gray, Color.Black, Vector2.Zero, 0.7f);
+            }
+
             if (IsMouseHovering)
             {
-                string state = unlocked
-                    ? "Unlocked"
-                    : (canUnlock ? $"Click to unlock (Points: {player.skillPoints})" : "Locked");
+                string costText = node.SkillPointCost > 1 ? $" (Cost: {node.SkillPointCost})" : "";
+                string rankInfo = node.MaxRank > 1 ? $" [{currentRank}/{node.MaxRank}]" : "";
+                
+                // Add tree investment progress for major nodes (capstones)
+                string treeProgressText = "";
+                if (node.IsMajor && !unlocked)
+                {
+                    int pointsSpentInTree = CalculateTreeInvestment(_nodeId, player);
+                    treeProgressText = $"\nTree Investment: {pointsSpentInTree}/6";
+                }
+                
+                string state = unlocked && currentRank >= node.MaxRank
+                    ? "Max Rank"
+                    : (canUnlock ? $"Click to unlock{costText} (Points: {player.skillPoints})" : "Locked");
 
-                Main.instance.MouseText($"{node.Name}\n{node.Description}\n{state}");
+                Main.instance.MouseText($"{node.Name}{rankInfo}\n{node.Description}\n{state}{treeProgressText}");
             }
+        }
+
+        private int CalculateTreeInvestment(string nodeId, ExileTreePlayer player)
+        {
+            int pointsSpentInTree = 0;
+            string treeIdentifier = "";
+            
+            if (nodeId.Contains("Melee")) treeIdentifier = "Melee";
+            else if (nodeId.Contains("Magic")) treeIdentifier = "Magic";
+            else if (nodeId.Contains("Ranged") || nodeId.Contains("Move")) treeIdentifier = "Ranged";
+            else if (nodeId.Contains("Summon")) treeIdentifier = "Summon";
+            else if (nodeId.Contains("DR") || nodeId.Contains("Life") || nodeId.Contains("Regen")) treeIdentifier = "Health";
+            
+            foreach (var kvp in player.nodeRanks)
+            {
+                if (PassiveTreeSystem.AllNodes.TryGetValue(kvp.Key, out var treeNode) && !treeNode.IsMajor)
+                {
+                    bool inSameTree = false;
+                    if (treeIdentifier == "Melee" && kvp.Key.Contains("Melee")) inSameTree = true;
+                    else if (treeIdentifier == "Magic" && kvp.Key.Contains("Magic")) inSameTree = true;
+                    else if (treeIdentifier == "Ranged" && (kvp.Key.Contains("Ranged") || kvp.Key.Contains("Move"))) inSameTree = true;
+                    else if (treeIdentifier == "Summon" && kvp.Key.Contains("Summon")) inSameTree = true;
+                    else if (treeIdentifier == "Health" && (kvp.Key.Contains("DR") || kvp.Key.Contains("Life") || kvp.Key.Contains("Regen"))) inSameTree = true;
+                    
+                    if (inSameTree)
+                    {
+                        pointsSpentInTree += kvp.Value * treeNode.SkillPointCost;
+                    }
+                }
+            }
+            
+            return pointsSpentInTree;
         }
 
         // Handle left-click unlocking
@@ -121,15 +169,23 @@ namespace ExileTree.Content.UI
             if (!PassiveTreeSystem.AllNodes.TryGetValue(_nodeId, out var node))
                 return;
 
-            if (player.unlockedNodes.Contains(_nodeId))
+            int currentRank = player.nodeRanks.TryGetValue(_nodeId, out var rank) ? rank : 0;
+            
+            // Check if already at max rank
+            if (currentRank >= node.MaxRank)
                 return;
-            if (!PassiveTreeSystem.CanUnlock(_nodeId, player.unlockedNodes))
+            
+            // Check if can unlock (prerequisites met)
+            if (!PassiveTreeSystem.CanUnlock(_nodeId, player.unlockedNodes, player.nodeRanks))
                 return;
-            if (player.skillPoints <= 0)
+            
+            // Check if player has enough skill points
+            if (player.skillPoints < node.SkillPointCost)
                 return;
 
-            player.unlockedNodes.Add(_nodeId);
-            player.skillPoints--;
+            // Increase rank
+            player.nodeRanks[_nodeId] = currentRank + 1;
+            player.skillPoints -= node.SkillPointCost;
             SoundEngine.PlaySound(SoundID.Unlock);
         }
 

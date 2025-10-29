@@ -34,40 +34,34 @@ namespace ExileTree.Content.UI
 
             // Calculate tree dimensions
             Vector2 treeSize = maxPos - minPos;
-            const float minPadding = 150f; // Minimum padding around the tree
+            
+            // Add padding for node size and some breathing room
+            const float nodePadding = 80f; // Space for nodes and margins
+            const float contentPadding = 40f; // Extra UI padding
+            
+            float contentWidth = treeSize.X + nodePadding * 2;
+            float contentHeight = treeSize.Y + nodePadding * 2;
+            
+            // Set maximum dimensions to prevent excessive size on high-res
+            const float maxWindowWidth = 1000f;
+            const float maxWindowHeight = 700f;
+            
+            // Apply max constraints
+            float windowWidth = Math.Min(contentWidth + contentPadding, maxWindowWidth);
+            float windowHeight = Math.Min(contentHeight + contentPadding, maxWindowHeight);
+            
+            // Ensure minimum size for usability
+            windowWidth = Math.Max(windowWidth, 600f);
+            windowHeight = Math.Max(windowHeight, 450f);
             
             // Create the main window
             _window = new UIPanel();
+            _window.Width.Set(windowWidth, 0f);
+            _window.Height.Set(windowHeight, 0f);
             
-            // Calculate the aspect ratio of the tree
-            float treeAspect = treeSize.X / treeSize.Y;
-            float screenAspect = (float)Main.screenWidth / Main.screenHeight;
-            
-            // Start with a base size that's 70% of the screen height
-            float baseHeight = Main.screenHeight * 0.7f;
-            float baseWidth = baseHeight * treeAspect;
-            
-            // If width is too wide, scale based on width instead
-            if (baseWidth > Main.screenWidth * 0.7f)
-            {
-                baseWidth = Main.screenWidth * 0.7f;
-                baseHeight = baseWidth / treeAspect;
-            }
-            
-            // Calculate final percentages with minimum padding
-            float widthPercent = (baseWidth + minPadding * 2) / Main.screenWidth;
-            float heightPercent = (baseHeight + minPadding * 2) / Main.screenHeight;
-            
-            // Ensure we don't exceed 85% of screen size
-            widthPercent = Math.Min(widthPercent, 0.85f);
-            heightPercent = Math.Min(heightPercent, 0.85f);
-            
-            _window.Width.Set(0, widthPercent);
-            _window.Height.Set(0, heightPercent);
-            
-            // Center the window
-            _window.Left.Set(0, (1f - widthPercent) / 2);
-            _window.Top.Set(0, (1f - heightPercent) / 2);
+            // Center the window - calculate center position in pixels
+            _window.HAlign = 0.5f;
+            _window.VAlign = 0.5f;
             
             _window.SetPadding(6);
             Append(_window);
@@ -79,7 +73,7 @@ namespace ExileTree.Content.UI
             _container.Width.Set(-20, 1f);    // Full width minus padding
             _container.Height.Set(-20, 1f);   // Full height minus padding
             _container.Left.Set(10, 0f);      // Add padding from edges
-            _container.Top.Set(10, 0f);       // Add padding from edges
+            _container.Top.Set(-30, 0f);      // Negative offset to move tree up
             _container.SetPadding(0);
             _container.OverflowHidden = true; // Clip content to container bounds
             _window.Append(_container);

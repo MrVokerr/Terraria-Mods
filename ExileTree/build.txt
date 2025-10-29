@@ -1,6 +1,6 @@
 displayName = Exile Tree
 author = Vokerr
-version = 1
+version = 1.2
 side = Both
 
 include = Content/*
