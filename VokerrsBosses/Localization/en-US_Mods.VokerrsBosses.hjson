@@ -14,7 +14,7 @@ Mods: {
 
 		Items: {
 			FlatBeep: {
-				DisplayName: Vintage Game & Watch
+				DisplayName: Save File
 				Tooltip:
 					'''
 					A mysterious floppy disc from 1980
