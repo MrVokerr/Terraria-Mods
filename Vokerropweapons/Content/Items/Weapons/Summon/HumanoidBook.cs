@@ -42,6 +42,23 @@ namespace Vokerropweapons.Content.Items.Weapons.Summon
         public override bool Shoot(Player player, Terraria.DataStructures.EntitySource_ItemUse_WithAmmo source,
             Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            // Count existing minions of this type
+            int minionCount = 0;
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile p = Main.projectile[i];
+                if (p.active && p.owner == player.whoAmI && p.type == type)
+                {
+                    minionCount++;
+                }
+            }
+
+            // Max 3 minions allowed
+            if (minionCount >= 3)
+            {
+                return false; // Don't spawn more if already at cap
+            }
+
             // Apply buff so the minion persists
             player.AddBuff(Item.buffType, 2);
 

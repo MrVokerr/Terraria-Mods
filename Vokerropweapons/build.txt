@@ -1,4 +1,4 @@
 displayName = Vokerr OP Weapons
 author = Vokerr
-version = 0.6
+version = 0.7
 side = Both

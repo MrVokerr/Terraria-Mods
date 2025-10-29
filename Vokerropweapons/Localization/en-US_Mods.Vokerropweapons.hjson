@@ -43,7 +43,7 @@ Mods: {
 		BuffDescription: {
 			Voidburn: Losing life and defense to dimensional flame
 			BeanMinionBuff: A loyal bean fights for you!
-			HumanoidMinionBuff: A loyal companion fighting by your side
+			HumanoidMinionBuff: She's got your back and isn't afraid to show it!
 		}
 	}
 }
@@ -61,7 +61,7 @@ Buffs: {
 
 	HumanoidMinionBuff: {
 		DisplayName: Fiesty Latina
-		Description: A loyal companion fighting by your side
+		Description: She's got your back and isn't afraid to show it!
 	}
 }
 
