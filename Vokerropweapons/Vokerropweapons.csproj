@@ -9,13 +9,6 @@
 	</PropertyGroup>
 
 	<!-- References -->
-	<ItemGroup>
-		<Compile Include="Content\Items\Weapons\Melee\Voidreaver.cs" />
-		<Compile Include="Projectiles\VoidSlash.cs" />
-		<Compile Include="Buffs\Voidburn.cs" />
-		<Compile Include="Players\VoidreaverPlayer.cs" />
-		<Compile Include="Content\Items\Weapons\Ranged\DuhCannon.cs" />
-		<Compile Include="Content\Items\Weapons\Ranged\TKWave.cs" />
-	</ItemGroup>
+	<!-- References: relying on SDK implicit compile items to include all .cs files under the project directory -->
 
 </Project>

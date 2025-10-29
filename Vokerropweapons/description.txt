@@ -1,6 +1,24 @@
 Just some OP Weapons I wanted to make.
-Includes:
-Voidreaver Sword
-TK Wave
-DuhCannon
-Bean Flicker
+
+Weapons Included:
+
+MELEE:
+- Voidreaver: A reality-tearing sword with time freeze ability
+  Recipe: 10 Dirt Block + 5 Wood @ Work Bench
+  
+- Void Sunder: Throws a returning blade through the void
+  Recipe: 10 Hellstone Bar + 5 Soul of Night @ Anvil
+
+RANGED:
+- TK Wave: Fires wave-like projectiles inspired by Borderlands
+  Recipe: 1 Illegal Gun Parts + 25 Wood @ Anvil
+  
+- DuhCannon: Fires absolutely massive cannonballs
+  Recipe: 25 Explosive Powder + 30 Iron Bar @ Mythril Anvil
+
+SUMMON:
+- Bean Flicker: Summons beans that chase enemies
+  Recipe: 5 Vine @ Anvil
+  
+- Grimoire of the Fiesty: Summons up to 3 Fiesty Latinas
+  Recipe: 10 Wood + 3 Fallen Star @ Work Bench

@@ -5,6 +5,8 @@ Mods: {
 			TKWave: TK Wave
 			DuhCannon: DuhCannon
 			BeanFlicker: Bean Flicker
+			HumanoidBook: Grimoire of the Fiesty
+			VoidSunder: Void Sunder
 		}
 
 		ItemTooltip: {
@@ -24,16 +26,24 @@ Mods: {
 				Flicks beans at your enemies.
 				Summons beans that chase enemies.
 				'''
+			HumanoidBook: Summons a Fiesty Latina to help you in your fights.
+			VoidSunder:
+				'''
+				Hurls a blade through the void.
+				It returns from the edge of reality.
+				'''
 		}
 
 		BuffName: {
 			Voidburn: Voidburn
 			BeanMinionBuff: Bean Minion
+			HumanoidMinionBuff: Fiesty Latina
 		}
 
 		BuffDescription: {
 			Voidburn: Losing life and defense to dimensional flame
 			BeanMinionBuff: A loyal bean fights for you!
+			HumanoidMinionBuff: A loyal companion fighting by your side
 		}
 	}
 }
@@ -48,27 +58,58 @@ Buffs: {
 		DisplayName: Bean Minion
 		Description: Mods.Vokerropweapons.Buffs.BeanMinionBuff.Description
 	}
+
+	HumanoidMinionBuff: {
+		DisplayName: Fiesty Latina
+		Description: A loyal companion fighting by your side
+	}
 }
 
 Items: {
 	Voidreaver: {
 		DisplayName: Voidreaver
-		Tooltip: ""
+		Tooltip:
+			'''
+			Tears through reality with every swing.
+			Right-click to freeze time.
+			'''
 	}
 
 	TKWave: {
 		DisplayName: TK Wave
-		Tooltip: Mods.Vokerropweapons.ItemTooltip.TKWave
+		Tooltip: Fires wave-like projectiles, inspired by the Borderlands classic.
 	}
 
 	DuhCannon: {
 		DisplayName: DuhCannon
-		Tooltip: Mods.Vokerropweapons.ItemTooltip.DuhCannon
+		Tooltip:
+			'''
+			Fires an absolutely massive cannonball.
+			It's stupid powerful. Hence the name.
+			'''
 	}
 
 	BeanFlicker: {
 		DisplayName: Bean Flicker
-		Tooltip: Mods.Vokerropweapons.ItemTooltip.BeanFlicker
+		Tooltip:
+			'''
+			Flicks beans at your enemies.
+			Summons beans that chase enemies.
+			'''
+	}
+
+	HumanoidBook: {
+		DisplayName: Grimoire of the Fiesty
+		Tooltip: Summons a Fiesty Latina to help you in your fights.
+	}
+
+	VoidSunder: {
+		DisplayName: Void Sunder
+		Tooltip:
+			'''
+			Hurls a blade through the void.
+			It returns from the edge of reality.
+			'''
 	}
 }
 
@@ -77,4 +118,7 @@ Projectiles: {
 	TKWaveProjectile.DisplayName: Wave Pulse
 	CannonballProjectile.DisplayName: Cannonball
 	BeanMinion.DisplayName: Bean
+	HumanoidMinion.DisplayName: Humanoid Minion
+	HumanoidBolt.DisplayName: Humanoid Bolt
+	VoidSunderProjectile.DisplayName: Void Sunder Projectile
 }

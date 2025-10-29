@@ -10,8 +10,8 @@ namespace Vokerropweapons.Content.Projectiles
     {
         public override void SetDefaults()
         {
-            Projectile.width = 60;
-            Projectile.height = 60;
+            Projectile.width = 64;
+            Projectile.height = 64;
             Projectile.aiStyle = 27;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
