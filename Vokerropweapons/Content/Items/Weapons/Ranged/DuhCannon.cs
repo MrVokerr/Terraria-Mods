@@ -35,11 +35,11 @@ namespace Vokerropweapons.Content.Items.Weapons.Ranged
 
         public override void AddRecipes()
         {
-            Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.ExplosivePowder, 25);
-            recipe.AddIngredient(ItemID.IronBar, 30);
-            recipe.AddTile(TileID.MythrilAnvil);
-            recipe.Register();
+            // Simple test recipe for ease of testing: only requires a Work Bench
+            CreateRecipe()
+                .AddIngredient(ItemID.Wood, 15)
+                .AddTile(TileID.WorkBenches)
+                .Register();
         }
         public override bool Shoot(Player player, Terraria.DataStructures.EntitySource_ItemUse_WithAmmo source,
             Vector2 position, Vector2 velocity, int type, int damage, float knockback)

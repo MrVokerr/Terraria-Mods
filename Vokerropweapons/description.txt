@@ -14,7 +14,7 @@ RANGED:
   Recipe: 1 Illegal Gun Parts + 25 Wood @ Anvil
   
 - DuhCannon: Fires absolutely massive cannonballs
-  Recipe: 25 Explosive Powder + 30 Iron Bar @ Mythril Anvil
+  Recipe: 15 Wood @ Work Bench
 
 SUMMON:
 - Bean Flicker: Summons beans that chase enemies
