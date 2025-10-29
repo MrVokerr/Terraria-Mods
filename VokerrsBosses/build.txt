@@ -1,0 +1,3 @@
+displayName = Vokerr&#39;s Bosses
+author = Vokerr
+version = 0.1

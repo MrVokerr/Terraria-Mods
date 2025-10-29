@@ -1,0 +1,57 @@
+# This file will automatically update with entries for new content after a build and reload.
+
+Mods: {
+	VokerrsBosses: {
+		NPCs: {
+			MrGameAndWatch: {
+				DisplayName: Mr. Game and Watch
+			}
+		}
+
+		Projectiles: {
+			ChefSausage: {
+				DisplayName: Sausage
+			}
+
+			JudgeHammer: {
+				DisplayName: Judge Hammer
+			}
+
+			OilBlast: {
+				DisplayName: Oil Blast
+			}
+
+			FireTorch: {
+				DisplayName: Fire Torch
+			}
+		}
+
+		Items: {
+			FlatBeep: {
+				DisplayName: Vintage Game & Watch
+				Tooltip: 
+					'''
+					Summons Mr. Game & Watch
+					Press all the buttons at once to summon him!
+					'BEEP BEEP BEEP!'
+					'''
+			}
+
+			MrGameAndWatchBag: {
+				DisplayName: Treasure Bag
+				Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
+			}
+
+			MrGameAndWatchTrophy: {
+				DisplayName: Mr. Game and Watch Trophy
+				Tooltip: "'A monument to your retro victory'"
+			}
+		}
+
+		Tiles: {
+			MrGameAndWatchTrophy: {
+				MapEntry: Mr. Game and Watch Trophy
+			}
+		}
+	}
+}

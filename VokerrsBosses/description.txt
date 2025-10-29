@@ -1,0 +1,8 @@
+Vokerr's Bosses adds exciting new boss encounters to Terraria!
+
+Currently features:
+- Mr. Game and Watch: A retro 2D fighter who brings his Super Smash Bros. moveset to Terraria! Battle against this iconic character using his classic attacks including Chef's sausages, Oil Panic bucket, Judge's hammer, and more. 
+
+Watch out for his desperation move! When reduced to 1 HP, he becomes invulnerable and performs one final Judge attack. If he lands the legendary 9-Hammer, he'll instantly defeat you and escape without dropping any loot - forcing you to summon and fight him again!
+
+Each Judge attack displays its number (1-9) with higher numbers dealing more damage and knockback. Will you survive the RNG?

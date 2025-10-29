@@ -1,0 +1,77 @@
+# SPRITE REQUIREMENTS FOR MR. GAME AND WATCH MOD
+
+This document lists all the sprite files you need to create for the mod to work properly.
+
+## Boss Sprites
+**Location:** Content/NPCs/Bosses/MrGameAndWatch/
+
+1. **MrGameAndWatch.png** - Main boss sprite sheet
+   - Size: 48x384 pixels (48x64 per frame, 6 frames)
+   - Should be a flat, black silhouette style like the original Game & Watch character
+   - Frames: Idle, Walk 1, Walk 2, Attack 1, Attack 2, Jump
+
+2. **MrGameAndWatch_Head_Boss.png** - Boss head icon
+   - Size: 36x36 pixels
+   - Appears on the boss health bar
+
+## Projectile Sprites
+**Location:** Content/Projectiles/Bosses/MrGameAndWatch/
+
+3. **ChefSausage.png** - Sausage projectile
+   - Size: 16x16 pixels
+   - Brown sausage sprite
+
+4. **JudgeHammer.png** - Hammer projectile
+   - Size: 48x48 pixels
+   - Black hammer silhouette
+
+5. **OilBlast.png** - Oil bucket blast
+   - Size: 32x32 pixels
+   - Dark liquid blob
+
+6. **FireTorch.png** - Fire torch projectile
+   - Size: 20x20 pixels
+   - Fire/torch sprite
+
+## Item Sprites
+**Location:** Content/Items/SummonItems/
+
+7. **FlatBeep.png** - Boss summoning item
+   - Size: 32x32 pixels
+   - Could be a Game & Watch device or beeping object
+
+**Location:** Content/Items/BossBags/
+
+8. **MrGameAndWatchBag.png** - Boss treasure bag
+   - Size: 36x32 pixels
+   - Expert mode loot bag
+
+**Location:** Content/Items/Placeables/
+
+9. **MrGameAndWatchTrophy.png** - Trophy item icon
+   - Size: 32x32 pixels
+   - Boss trophy item
+
+## Tile Sprites
+**Location:** Content/Tiles/
+
+10. **MrGameAndWatchTrophy.png** - Trophy tile (placed)
+    - Size: 54x54 pixels (3x3 tile, 18x18 per tile)
+    - Trophy when placed on wall
+
+---
+
+## IMPORTANT NOTES:
+- All sprites should be PNG format with transparency
+- Mr. Game & Watch should maintain his iconic flat, black silhouette appearance
+- You can use placeholder sprites initially (simple colored rectangles) to test the mod
+- For actual release, create proper sprites matching the Super Smash Bros. style
+- Consider using sprite sheets for animated projectiles if desired
+
+## Creating Placeholder Sprites:
+You can create simple placeholder sprites using any image editor:
+- Use solid colors (black for boss, brown for sausage, etc.)
+- Make sure sizes match exactly as specified above
+- Save as PNG with transparency where needed
+
+Once you have sprites, place them in the correct folders and the mod should compile!
