@@ -74,7 +74,8 @@ namespace ExileTree.Content.Systems
         // Force refresh the UI if it's currently open
         public static void RefreshIfOpen() {
             if (Visible && _treeState != null) {
-                _treeState.ForceRefresh();
+                // UI updates automatically through Update() method
+                // No manual refresh needed
             }
         }
     }
