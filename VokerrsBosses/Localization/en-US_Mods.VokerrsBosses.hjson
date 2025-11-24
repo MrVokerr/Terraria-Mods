@@ -62,7 +62,7 @@ Items: {
 	}
 
 	FlatBeep: {
-		DisplayName: Flat Beep
+		DisplayName: Save File
 		Tooltip: ""
 	}
 
