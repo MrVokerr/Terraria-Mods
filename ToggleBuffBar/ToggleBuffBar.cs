@@ -16,7 +16,7 @@ namespace ToggleBuffBar
         public override void Load()
         {
             // Register the keybind with default key "B"
-            ToggleBuffsHotKey = KeybindLoader.RegisterKeybind(this, "Toggle Buff Bar", "B");
+            ToggleBuffsHotKey = KeybindLoader.RegisterKeybind(this, "ToggleBuffs", "B");
         }
 
         public override void Unload()
